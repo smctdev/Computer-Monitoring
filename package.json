@@ -1,0 +1,12 @@
+{
+  "name": "computer-monitoring",
+  "version": "1.0.0",
+  "private": true,
+
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "scripts": {
+    "all": "concurrently \"cd server && php artisan serve --port=5001\" \"pnpm --prefix client start\""
+  }
+}

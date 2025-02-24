@@ -1,0 +1,44 @@
+services:
+  computer-monitoring:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: computer-monitoring
+    container_name: computer-server
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./storage:/var/www/storage
+      - ./bootstrap/cache:/var/www/bootstrap/cache
+      - ./:/var/www
+      - ./docker-compose/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - computer
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: 172.17.0.1  # Replace with your host's IP if necessary
+      DB_PORT: 3306
+      DB_DATABASE: computer_monitoring
+      DB_USERNAME: smct
+      DB_PASSWORD: smct
+      APP_DEBUG: ${APP_DEBUG}
+
+
+  computer-nginx:
+    image: nginx:alpine
+    container_name: computer-nginx
+    restart: unless-stopped
+    ports:
+      - 9002:9002
+    volumes:
+      - ./docker-compose/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./:/var/www
+    networks:
+      - computer
+
+volumes:
+  computer_data:
+
+networks:
+  computer:
+    driver: bridge

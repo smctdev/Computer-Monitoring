@@ -1,0 +1,15 @@
+services:
+  computer-react:
+    container_name: computer-client
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./src:/app/src 
+    stdin_open: true
+    tty: true

@@ -11,6 +11,9 @@ RUN apk --no-cache add \
     && docker-php-ext-install gd \
     && docker-php-ext-install pdo pdo_mysql
 
+# Remove default www-data user (UID 82) and create a new one with UID 33
+RUN deluser www-data && addgroup -g 33 www-data && adduser -D -u 33 -G www-data www-data
+
 # Set working directory
 WORKDIR /var/www
 

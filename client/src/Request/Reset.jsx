@@ -35,7 +35,7 @@ function Reset() {
   });
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
-  const { user } = useAuth();
+  const { user, setIsRefresh } = useAuth();
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -52,7 +52,6 @@ function Reset() {
   const handleResetPassword = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setLoading(true);
 
     try {
       const userId = user ? user.id : null;
@@ -60,6 +59,7 @@ function Reset() {
         `change-new-password/${userId}`,
         inputValues
       );
+      console.log(response.data);
       if (response.data.status === true) {
         Swal.fire({
           icon: "success",
@@ -69,7 +69,7 @@ function Reset() {
           confirmButtonText: "Ok",
           html: "You will redirected to Dashboard <br>Thank you!",
         }).then(function () {
-          navigate("/dashboard");
+          setIsRefresh(true);
         });
       }
       setInputValues({
@@ -91,6 +91,7 @@ function Reset() {
       });
     } finally {
       setLoading(false);
+      setIsRefresh(false);
     }
     setError(null);
   };

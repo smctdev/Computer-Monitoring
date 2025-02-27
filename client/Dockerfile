@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies using npm
-RUN npm install --force
+RUN pnpm install
 
 # Copy the entire app code
 COPY . .
@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 9001
 
 # Start the application
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "start"]

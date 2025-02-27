@@ -1,29 +1,32 @@
-# Use Node.js Alpine as a lightweight base image
-FROM node:18-alpine
+# Use an official Node runtime as a parent image
+FROM node:16-alpine AS build
 
 # Set the working directory
 WORKDIR /app
 
-# Set environment variable for React to use the correct port
-ENV PORT=9001
+# Copy the package.json and package-lock.json to the working directory
+COPY ./package*.json ./
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install the dependencies
+RUN npm install --force
 
-# Copy only package.json and lock file first (for caching)
-COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy the rest of the application files
+# Copy the remaining application files to the working directory
 COPY . .
 
-# Build the React app
-RUN pnpm run build
+# Build the application
+RUN npm run build
 
-# Expose the correct port
+# Use a lightweight server to serve the static files
+FROM nginx:alpine
+
+# Copy the build files to the NGINX server
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy the NGINX configuration file
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
 EXPOSE 9001
 
-# Run the React app
-CMD ["pnpm", "start"]
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

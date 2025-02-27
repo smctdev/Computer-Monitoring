@@ -4,6 +4,9 @@ FROM node:18-alpine
 # Set the working directory
 WORKDIR /app
 
+# Set environment variable for React to use the correct port
+ENV PORT=9001
+
 # Install pnpm globally
 RUN npm install -g pnpm
 
@@ -19,11 +22,8 @@ COPY . .
 # Build the React app
 RUN pnpm run build
 
-# Install serve to serve the production build
-RUN pnpm add -g serve
-
 # Expose the correct port
 EXPOSE 9001
 
-# Run the production build using serve
-CMD ["serve", "-s", "build", "-l", "9001"]
+# Run the React app
+CMD ["pnpm", "start"]

@@ -1,24 +1,20 @@
-# Use Node.js as a base image
-FROM node:16-alpine
+# Use the Node.js image
+FROM node:18
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json to the working directory
-COPY ./package*.json ./
+# Copy package.json and package-lock.json (if present) to leverage Docker cache
+COPY package.json package-lock.json ./
 
-# Install the dependencies
-RUN npm install --force
+# Install dependencies using npm
+RUN npm install
 
-# Copy the remaining application files to the working directory
+# Copy the entire app code
 COPY . .
 
-# Build the application
-RUN npm run build
-
-# Install a simple HTTP server to serve static files
-RUN npm install -g serve
-
+# Expose the port for the application
 EXPOSE 9001
 
-CMD ["serve", "-s", "build", "-l", "9001"]
+# Start the application
+CMD ["npm", "run", "dev"]

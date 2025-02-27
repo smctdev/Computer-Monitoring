@@ -97,6 +97,7 @@ class LoginController extends Controller
         ]);
 
         if (!$login) {
+            \Log::error('wow error');
             return response()->json([
                 'status'        =>          false,
                 'message'       =>          'Invalid Credentials'

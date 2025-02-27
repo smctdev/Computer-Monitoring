@@ -5,12 +5,13 @@ import api from "../api/axios";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Placeholder({ texts }) {
   const [inputValues, setInputValues] = useState(texts.map(() => ""));
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (index, event) => {
     const newInputValues = [...inputValues];
@@ -34,7 +35,7 @@ function Placeholder({ texts }) {
           confirmButtonText: "Ok",
           html: "You will redirected to Login page <br>Thank you!",
         }).then(function () {
-          window.location = "/login";
+          navigate("/login");
         });
         setValidationErrors("");
       }
@@ -99,7 +100,7 @@ function Placeholder({ texts }) {
             <button
               className={
                 loading
-                  ? "mt-10 h-auto rounded-full font-semibold bg-blue-800 text-white"
+                  ? "mt-10 h-10 rounded-full font-semibold bg-blue-600 text-white"
                   : "mt-10 h-10 rounded-full font-semibold bg-blue-800 text-white"
               }
               style={{ width: "192px" }}
@@ -137,7 +138,7 @@ function Backg() {
 function Forgot() {
   useEffect(() => {
     document.title = "Computer Monitoring - Forgot Password";
-  });
+  }, []);
   return (
     <div>
       <Backg />

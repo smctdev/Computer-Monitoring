@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import smct from "../img/smct.png";
 import bg from "../img/bg.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Swal from "sweetalert2";
 
@@ -111,6 +111,7 @@ function SignUp() {
     password_confirmation: "",
   });
   const [branches, setBranches] = useState({ branches: [] });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBranches = async () => {
@@ -151,7 +152,7 @@ function SignUp() {
           confirmButtonText: "Ok",
           html: "You will redirected to Login page <br>Thank you!",
         }).then(function () {
-          window.location = "/login";
+          navigate("/login");
         });
         setSuccess(response.data.message);
         setValidationErrors("");
@@ -199,7 +200,7 @@ function SignUp() {
 
   useEffect(() => {
     document.title = "Computer Monitoring - Signup";
-  });
+  }, []);
   return (
     <div className="relative min-h-screen">
       <Backg />

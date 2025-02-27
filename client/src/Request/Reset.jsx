@@ -12,6 +12,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import api from "../api/axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Backg() {
   return (
@@ -35,6 +36,7 @@ function Reset() {
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirm = () => setShowConfirm((show) => !show);
@@ -67,7 +69,7 @@ function Reset() {
           confirmButtonText: "Ok",
           html: "You will redirected to Dashboard <br>Thank you!",
         }).then(function () {
-          window.location = "/dashboard";
+          navigate("/dashboard");
         });
       }
       setInputValues({
@@ -95,7 +97,7 @@ function Reset() {
 
   useEffect(() => {
     document.title = "Computer Monitoring - Reset Password";
-  });
+  }, []);
 
   return (
     <div>

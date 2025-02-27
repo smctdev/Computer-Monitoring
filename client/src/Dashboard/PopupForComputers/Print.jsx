@@ -28,9 +28,6 @@ const PrintInformation = () => {
         console.log(response);
         if (response.status === 200) {
           setComputer(response.data.computer);
-
-          window.print();
-          window.onafterprint = handleAfterPrint;
         } else {
           console.error("Fetch error:", response.data.message);
         }
@@ -44,17 +41,24 @@ const PrintInformation = () => {
     fetchComputerData();
   }, [id]);
 
-  const handleAfterPrint = () => {
-    window.location.href = "/computers";
-  };
-
   useEffect(() => {
     document.title = loading
       ? "Computer Monitoring - Loading..."
       : computer
       ? `Computer Monitoring - ${computer.computer_user.name} Computer Detaills to Print`
       : "Computer Monitoring - Not Found";
-  });
+  }, [computer, loading]);
+
+  useEffect(() => {
+    if(computer && !loading) {
+      setTimeout(() => {
+        window.print();
+      }, 3000);
+      window.onafterprint = () => {
+        window.close()
+      };
+    }
+  }, [computer, loading]);
 
   if (loading) {
     return (

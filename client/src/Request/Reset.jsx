@@ -12,7 +12,6 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import api from "../api/axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 function Backg() {
   return (
@@ -36,7 +35,6 @@ function Reset() {
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
   const { user, setIsRefresh } = useAuth();
-  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirm = () => setShowConfirm((show) => !show);

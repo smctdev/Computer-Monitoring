@@ -16,20 +16,17 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Use a lightweight Node.js image to serve the static files
-FROM node:16-alpine
+# Use a lightweight server to serve the static files
+FROM nginx:alpine
 
-# Set the working directory
-WORKDIR /app
+# Copy the build files to the NGINX server
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Install a simple static file server
-RUN npm install -g serve
+# Copy the NGINX configuration file
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-# Copy the built files
-COPY --from=build /app/build /app
-
-# Expose port 9001
+# Expose port 80
 EXPOSE 9001
 
-# Start the server
-CMD ["serve", "-s", ".", "-l", "9001"]
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

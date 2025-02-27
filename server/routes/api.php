@@ -33,7 +33,7 @@ Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/branch-code', [BranchCodeController::class, 'branchCode']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::put('/change-new-password/{id}', [PasswordChangeController::class, 'update']);
-Route::put('/forgot-password', [ForgotPasswordController::class, 'forgotPassword']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotPassword']);
 
 Route::middleware("auth:sanctum")->group(function () {
     // GET

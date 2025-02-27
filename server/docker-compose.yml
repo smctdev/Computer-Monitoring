@@ -25,10 +25,10 @@ services:
       APP_DEBUG: "false"
       MAIL_MAILER: smtp
       MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
+      MAIL_PORT: 465
       MAIL_USERNAME: smctitprojects@gmail.com
       MAIL_PASSWORD: ztkatlxgziwgujcv
-      MAIL_ENCRYPTION: tls
+      MAIL_ENCRYPTION: ssl
       MAIL_FROM_ADDRESS: smctitprojects@gmail.com
       MAIL_FROM_NAME: "SMCT Computer Monitoring"
       APP_NAME: "Computer Monitoring"

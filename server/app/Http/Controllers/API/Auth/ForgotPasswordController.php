@@ -35,26 +35,40 @@ class ForgotPasswordController extends Controller
             ], 400);
         } else {
 
-            $newPassword = Str::random(10);
+            try {
+                $newPassword = Str::random(10);
 
-            $user->update([
-                'password'                  =>          bcrypt($newPassword),
-                'request_new_password'      =>          true
-            ]);
+                $user->update([
+                    'password' => bcrypt($newPassword),
+                    'request_new_password' => true
+                ]);
 
-            $firstName = $user->firstName;
-            $lastName = $user->lastName;
+                $firstName = $user->firstName;
+                $lastName = $user->lastName;
 
-            Mail::to($user->email)->send(new NewPasswordEmail($firstName, $lastName, $newPassword));
+                Mail::to($user->email)->send(new NewPasswordEmail($firstName, $lastName, $newPassword));
 
-            return response()->json([
-                'status'        =>      true,
-                'message'       =>      "We sent a new password to your email " . $user->email . ". Please check your inbox."
-            ], 200)
-                ->header('Access-Control-Allow-Origin', 'https://computer-monitoring.smctgroup.ph')
-                ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-                ->header('Access-Control-Allow-Credentials', 'true');
+                return response()->json([
+                    'status' => true,
+                    'message' => "We sent a new password to your email " . $user->email . ". Please check your inbox."
+                ], 200)
+                    ->header('Access-Control-Allow-Origin', 'https://computer-monitoring.smctgroup.ph')
+                    ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+                    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                    ->header('Access-Control-Allow-Credentials', 'true');
+            } catch (\Exception $e) {
+                // Log the error for debugging
+                \Log::error("Password reset email failed: " . $e->getMessage());
+
+                return response()->json([
+                    'status' => false,
+                    'message' => "An error occurred while sending the password reset email."
+                ], 500)
+                    ->header('Access-Control-Allow-Origin', 'https://computer-monitoring.smctgroup.ph')
+                    ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+                    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                    ->header('Access-Control-Allow-Credentials', 'true');
+            }
         }
     }
 }

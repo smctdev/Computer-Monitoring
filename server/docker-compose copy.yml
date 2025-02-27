@@ -24,6 +24,8 @@ services:
       DB_PASSWORD: smct
 
 
+
+
   computer-nginx:
     image: nginx:alpine
     container_name: computer-nginx

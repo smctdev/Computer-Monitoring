@@ -23,7 +23,7 @@ function Placeholder({ texts }) {
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await api.put("/forgot-password", {
+      const response = await api.post("/forgot-password", {
         email: inputValues[0],
       });
       if (response.data.status === true) {

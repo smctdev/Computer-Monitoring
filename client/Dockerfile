@@ -1,23 +1,29 @@
-# Use Node.js as a base image
+# Use Node.js Alpine as a lightweight base image
 FROM node:18-alpine
 
 # Set the working directory
 WORKDIR /app
 
-
-# Install the dependencies
+# Install pnpm globally
 RUN npm install -g pnpm
 
-# Copy the package.json and package-lock.json to the working directory
+# Copy only package.json and lock file first (for caching)
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
-# Copy the remaining application files to the working directory
+# Copy the rest of the application files
 COPY . .
 
+# Build the React app
 RUN pnpm run build
 
+# Install serve to serve the production build
+RUN pnpm add -g serve
+
+# Expose the correct port
 EXPOSE 9001
 
-CMD ["pnpm", "start", "-p", "9001"]
+# Run the production build using serve
+CMD ["serve", "-s", "build", "-l", "9001"]

@@ -43,7 +43,7 @@ function LoginForm({ fields }) {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const [validationErrors, setValidationErrors] = useState({});
-  const { login } = useAuth();
+  const { login, setIsRefresh } = useAuth();
 
   // Handler for input change
   const handleChange = (index, event) => {
@@ -57,6 +57,7 @@ function LoginForm({ fields }) {
     const username_or_email = inputValues[0];
     const password = inputValues[1];
     setLoading(true);
+    setIsRefresh(true);
 
     try {
       const response = await api.post("/login", {
@@ -71,9 +72,9 @@ function LoginForm({ fields }) {
       }
     } catch (error) {
       console.error("Error:", error);
+
       if (error.response.status === 409) {
         Cookies.set("token", error.response.data.token);
-        navigate("/change-new-password");
       } else if (error.response.status === 400) {
         setValidationErrors(error.response.data.errors || {});
         const Toast = Swal.mixin({
@@ -96,6 +97,7 @@ function LoginForm({ fields }) {
       }
     } finally {
       setLoading(false);
+      setIsRefresh(false);
     }
   };
 

@@ -18,15 +18,14 @@ class ForgotPasswordController extends Controller
             'email'         =>          ['required', 'email', 'max:255', 'regex:/^\S+@\S+\.\S+$/']
         ]);
 
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
             return response()->json([
                 'status'        =>          false,
                 'message'       =>          "Fix the fields first",
                 'errors'        =>          $validation->errors()
             ], 400);
         }
-            
+
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -51,7 +50,11 @@ class ForgotPasswordController extends Controller
             return response()->json([
                 'status'        =>      true,
                 'message'       =>      "We sent a new password to your email " . $user->email . ". Please check your inbox."
-            ], 200);
+            ], 200)
+                ->header('Access-Control-Allow-Origin', 'https://computer-monitoring.smctgroup.ph')
+                ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+                ->header('Access-Control-Allow-Credentials', 'true');
         }
     }
 }

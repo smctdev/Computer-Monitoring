@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 9001
 
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["pnpm", "start", "-p", "9001"]

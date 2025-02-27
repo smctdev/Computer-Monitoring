@@ -1,23 +1,23 @@
-# Use the Node.js image
-FROM node:18
+# Use Node.js as a base image
+FROM node:18-alpine
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
+
 
 # Install the dependencies
 RUN npm install -g pnpm
 
-# Copy package.json and package-lock.json (if present) to leverage Docker cache
+# Copy the package.json and package-lock.json to the working directory
 COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies using npm
 RUN pnpm install
 
-# Copy the entire app code
+# Copy the remaining application files to the working directory
 COPY . .
 
-# Expose the port for the application
+RUN pnpm run build
+
 EXPOSE 9001
 
-# Start the application
 CMD ["pnpm", "start", "-p", "9001"]

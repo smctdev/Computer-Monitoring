@@ -42,10 +42,16 @@ class ForgotPasswordController extends Controller
                 'request_new_password'      =>          true
             ]);
 
-            // $firstName = $user->firstName;
-            // $lastName = $user->lastName;
+            $firstName = $user->firstName;
+            $lastName = $user->lastName;
 
-            // Mail::to($user->email)->send(new NewPasswordEmail($firstName, $lastName, $newPassword));
+            try {
+                Mail::to($user->email)->send(new NewPasswordEmail($firstName, $lastName, $newPassword));
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors'        =>          $e->getMessage()
+                ], 200);
+            }
 
             return response()->json([
                 'status'        =>      true,

@@ -4,6 +4,9 @@ FROM node:18
 # Set working directory
 WORKDIR /app
 
+# Install the dependencies
+RUN npm install -g pnpm
+
 # Copy package.json and package-lock.json (if present) to leverage Docker cache
 COPY package.json pnpm-lock.yaml ./
 

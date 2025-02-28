@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import Swal from "sweetalert2";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import StorageUtils from "../utils/StorageUtils";
@@ -62,8 +61,8 @@ const SearchableDropdown = ({ options, placeholder, onSelect, userData }) => {
   };
 
   useEffect(() => {
-    if (userData && userData.branch_code.branch_name) {
-      setSearchTerm(userData.branch_code.branch_name);
+    if (userData?.branch_code.branch_name) {
+      setSearchTerm(userData?.branch_code.branch_name);
     }
   }, [userData]);
 
@@ -101,7 +100,6 @@ const SearchableDropdown = ({ options, placeholder, onSelect, userData }) => {
 };
 
 function Placeholder() {
-  const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [inputValues, setInputValues] = useState({
     firstName: "",
@@ -117,7 +115,7 @@ function Placeholder() {
   });
   const [preview, setPreview] = useState(null);
   const [branches, setBranches] = useState({ branches: [] });
-  const { user, setIsRefresh } = useAuth();
+  const { user, updateProfileData, errors } = useAuth();
 
   useEffect(() => {
     setInputValues({
@@ -163,7 +161,6 @@ function Placeholder() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setIsRefresh(true);
     try {
       const formData = new FormData();
       formData.append("firstName", inputValues.firstName);
@@ -179,63 +176,14 @@ function Placeholder() {
         inputValues.newPassword_confirmation
       );
       formData.append("profile_picture", inputValues.profile_picture);
-      const response = await api.post("/profile/update", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.data.status === true) {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-right",
-          iconColor: "green",
-          customClass: {
-            popup: "colored-toast",
-          },
-          showConfirmButton: false,
-          showCloseButton: true,
-          timer: 2500,
-          timerProgressBar: true,
-        });
-        (async () => {
-          await Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-        })();
-        setValidationErrors("");
-        inputValues.oldPassword = "";
-        inputValues.newPassword = "";
-        inputValues.newPassword_confirmation = "";
-        inputValues.profile_picture = null;
-      }
+      await updateProfileData(formData);
+      inputValues.oldPassword = "";
+      inputValues.newPassword = "";
+      inputValues.newPassword_confirmation = "";
     } catch (error) {
       console.error("Error: ", error);
-      if (error.response && error.response.data) {
-        console.error("Backend error response:", error.response.data);
-        setValidationErrors(error.response.data.errors || {});
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-right",
-          iconColor: "red",
-          customClass: {
-            popup: "colored-toast",
-          },
-          showConfirmButton: false,
-          showCloseButton: true,
-          timer: 2500,
-          timerProgressBar: true,
-        });
-        (async () => {
-          await Toast.fire({
-            icon: "error",
-            title: error.response.data.message,
-          });
-        })();
-      }
     } finally {
       setLoading(false);
-      setIsRefresh(false);
     }
   };
   return (
@@ -294,10 +242,10 @@ function Placeholder() {
               }
             />
             <span className="mb-2">
-              {validationErrors.firstName && (
+              {errors.firstName && (
                 <div className="text-red-500">
                   <ul>
-                    {validationErrors.firstName.map((error, index) => (
+                    {errors.firstName.map((error, index) => (
                       <li key={index}>{error}</li>
                     ))}
                   </ul>
@@ -316,10 +264,10 @@ function Placeholder() {
               }
             />
             <span className="mb-2">
-              {validationErrors.lastName && (
+              {errors.lastName && (
                 <div className="text-red-500">
                   <ul>
-                    {validationErrors.lastName.map((error, index) => (
+                    {errors.lastName.map((error, index) => (
                       <li key={index}>{error}</li>
                     ))}
                   </ul>
@@ -343,10 +291,10 @@ function Placeholder() {
               }
             />
             <span className="mb-2">
-              {validationErrors.contactNumber && (
+              {errors.contactNumber && (
                 <div className="text-red-500">
                   <ul>
-                    {validationErrors.contactNumber.map((error, index) => (
+                    {errors.contactNumber.map((error, index) => (
                       <li key={index}>{error}</li>
                     ))}
                   </ul>
@@ -365,10 +313,10 @@ function Placeholder() {
               }
             />
             <span className="mb-2">
-              {validationErrors.email && (
+              {errors.email && (
                 <div className="text-red-500">
                   <ul>
-                    {validationErrors.email.map((error, index) => (
+                    {errors.email.map((error, index) => (
                       <li key={index}>{error}</li>
                     ))}
                   </ul>
@@ -388,10 +336,10 @@ function Placeholder() {
           }
         />
         <span className="mb-2">
-          {validationErrors.branch_code_id && (
+          {errors.branch_code_id && (
             <div className="text-red-500">
               <ul>
-                {validationErrors.branch_code_id.map((error, index) => (
+                {errors.branch_code_id.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
@@ -410,10 +358,10 @@ function Placeholder() {
           />
         </div>
         <span className="mb-2">
-          {validationErrors.username && (
+          {errors.username && (
             <div className="text-red-500">
               <ul>
-                {validationErrors.username.map((error, index) => (
+                {errors.username.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
@@ -434,10 +382,10 @@ function Placeholder() {
           />
         </div>
         <span className="mb-2">
-          {validationErrors.oldPassword && (
+          {errors.oldPassword && (
             <div className="text-red-500">
               <ul>
-                {validationErrors.oldPassword.map((error, index) => (
+                {errors.oldPassword.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
@@ -456,10 +404,10 @@ function Placeholder() {
           />
         </div>{" "}
         <span className="mb-2">
-          {validationErrors.newPassword && (
+          {errors.newPassword && (
             <div className="text-red-500">
               <ul>
-                {validationErrors.newPassword.map((error, index) => (
+                {errors.newPassword.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
@@ -481,14 +429,12 @@ function Placeholder() {
           />
         </div>
         <span className="mb-2">
-          {validationErrors.newPassword_confirmation && (
+          {errors.newPassword_confirmation && (
             <div className="text-red-500">
               <ul>
-                {validationErrors.newPassword_confirmation.map(
-                  (error, index) => (
-                    <li key={index}>{error}</li>
-                  )
-                )}
+                {errors.newPassword_confirmation.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
               </ul>
             </div>
           )}

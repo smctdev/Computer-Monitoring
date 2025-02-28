@@ -57,7 +57,6 @@ function Reset() {
         `change-new-password/${userId}`,
         inputValues
       );
-      console.log(response.data);
       if (response.data.status === true) {
         Swal.fire({
           icon: "success",

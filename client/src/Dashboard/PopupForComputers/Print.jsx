@@ -25,7 +25,6 @@ const PrintInformation = () => {
     const fetchComputerData = async () => {
       try {
         const response = await api.get(`computers/${id}`);
-        console.log(response);
         if (response.status === 200) {
           setComputer(response.data.computer);
         } else {

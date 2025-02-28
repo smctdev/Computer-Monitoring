@@ -64,7 +64,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user()->load('branchCode');
 
         $validation = Validator::make($request->all(), [
             'firstName'                 =>                  ['required',],

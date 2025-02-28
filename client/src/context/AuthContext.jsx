@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [isRefresh, setIsRefresh] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -80,6 +81,62 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("token");
     setIsAuthenticated(false);
   };
+
+  const updateProfileData = async (formData) => {
+    try {
+      const response = await api.post("/profile/update", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.status === 200) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-right",
+          iconColor: "green",
+          customClass: {
+            popup: "colored-toast",
+          },
+          showConfirmButton: false,
+          showCloseButton: true,
+          timer: 2500,
+          timerProgressBar: true,
+        });
+        (async () => {
+          await Toast.fire({
+            icon: "success",
+            title: response.data.message,
+          });
+        })();
+        setUser(response.data.data);
+        setErrors({});
+      }
+    } catch (error) {
+      console.error("Failed to update profile data", error);
+      setErrors(error.response.data.errors);
+      if (error.response && error.response.data) {
+        console.error("Backend error response:", error.response.data);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-right",
+          iconColor: "red",
+          customClass: {
+            popup: "colored-toast",
+          },
+          showConfirmButton: false,
+          showCloseButton: true,
+          timer: 2500,
+          timerProgressBar: true,
+        });
+        (async () => {
+          await Toast.fire({
+            icon: "error",
+            title: error.response.data.message,
+          });
+        })();
+      }
+    }
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -91,6 +148,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         isRequiredChangePassword,
         setIsRefresh,
+        updateProfileData,
+        errors,
       }}
     >
       {children}

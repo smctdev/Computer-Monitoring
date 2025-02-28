@@ -32,8 +32,6 @@ const ProtectedRoutes = ({
     return <Navigate to="/login" />;
   }
 
-  console.log(isAuthenticated, isRequiredChangePassword);
-
   if (isAuthenticated && isRequiredChangePassword) {
     return <Navigate to="/change-new-password" />;
   }

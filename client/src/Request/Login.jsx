@@ -5,7 +5,6 @@ import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import bg from "../img/bg.png";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
 import Cookies from "js-cookie";
@@ -41,7 +40,6 @@ function LoginForm({ fields }) {
   const [inputValues, setInputValues] = useState(fields.map(() => ""));
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
   const [validationErrors, setValidationErrors] = useState({});
   const { login, setIsRefresh } = useAuth();
 
@@ -68,7 +66,6 @@ function LoginForm({ fields }) {
       if (response.status === 200) {
         setSuccess("Login successful!");
         login(response.data.token);
-        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error:", error);

@@ -90,10 +90,13 @@ function Header({ toggleSidebar, title, isAuthenticated, toogleSideBarIcon }) {
 
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: "Are you sure you want to logout?",
+      title: "Logout",
+      icon: 'info',
+      text: "Are you sure you want to logout?",
       showCancelButton: true,
       confirmButtonColor: "red",
-      confirmButtonText: "Logout",
+      confirmButtonText: "Yes, Logout",
+      showCloseButton: true
     });
 
     if (result.isConfirmed) {
@@ -250,7 +253,7 @@ function Header({ toggleSidebar, title, isAuthenticated, toogleSideBarIcon }) {
         <button
           type="button"
           onClick={toogleSideBarIcon}
-          className="hidden md:block ml-4 text-white cursor-pointer"
+          className="hidden ml-4 text-white cursor-pointer md:block"
         >
           <FontAwesomeIcon icon={faBars} />
         </button>

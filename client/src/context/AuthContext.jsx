@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [isRequiredChangePassword, setIsRequiredChangePassword] =
     useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState([]);
   const [errors, setErrors] = useState({});
 
@@ -24,9 +23,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
         setIsAuthenticated(false);
         return;
-      }
-      if (isLogin) {
-        setLoading(true);
       }
       try {
         const response = await api.get("/profile");
@@ -66,15 +62,14 @@ export const AuthProvider = ({ children }) => {
         }
       } finally {
         setLoading(false);
-        setIsLogin(false);
       }
     };
     fetchUserProfile();
-  }, [isRefresh, isLogin]);
+  }, [isRefresh]);
 
   const login = (token) => {
     Cookies.set("token", token);
-    setIsLogin(true);
+    setLoading(true);
   };
 
   const logout = () => {

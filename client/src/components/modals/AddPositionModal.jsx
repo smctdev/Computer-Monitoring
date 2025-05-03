@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../../api/axios";
 import Swal from "sweetalert2";
 
-export default function AddPositionModal({ isOpen, onClose, isRefresh }) {
+export default function AddPositionModal({ isOpen, onClose, isRefresh, modalRef }) {
   const [positionName, setPositionName] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ export default function AddPositionModal({ isOpen, onClose, isRefresh }) {
     <>
       {isOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96">
+          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96" ref={modalRef}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 Add Position

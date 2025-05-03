@@ -66,7 +66,7 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
   };
 
   useEffect(() => {
-    if (!isOpen || !viewId) {
+    if (!isOpen) {
       return;
     }
     const fetchSpecsData = async () => {
@@ -75,11 +75,11 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
         const response = await api.get(`computer-user-specs/${viewId}`);
         if (response.status === 200) {
           setSpecs(response.data.computer_user_specs);
-          setRows(response.data.computer_user_specs?.computers[0].units);
+          setRows(response.data.computer_user_specs?.computers[0]?.units || []);
           const apps =
-            response.data.computer_user_specs?.computers[0].installed_applications.map(
+            response.data.computer_user_specs?.computers[0]?.installed_applications.map(
               (app) => app.application_content
-            );
+            ) || [];
           setApplicationContent(apps);
         }
       } catch (error) {

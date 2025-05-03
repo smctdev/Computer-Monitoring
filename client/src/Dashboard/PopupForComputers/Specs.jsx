@@ -23,7 +23,7 @@ function Specs({ isOpen, onClose, specsId }) {
   const [computerUser, setComputerUser] = useState("");
 
   useEffect(() => {
-    if (!isOpen || !specsId) {
+    if (!isOpen) {
       return;
     }
     const fetchSpecsData = async () => {
@@ -33,7 +33,7 @@ function Specs({ isOpen, onClose, specsId }) {
         if (response.status === 200) {
           const specs = response.data.computer_user_specs;
           const computers = specs.computers;
-          const units = computers[0].units;
+          const units = computers[0]?.units || [];
           setComputerUser(specs.name);
           setUnits(units);
         }

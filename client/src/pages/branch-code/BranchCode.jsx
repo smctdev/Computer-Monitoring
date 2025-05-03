@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTable, useSortBy } from "react-table";
 import {
@@ -40,6 +40,28 @@ function BranchCode() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
   const [branchCodeId, setBranchCodeId] = useState(null);
+  const buttonRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutSide = (event) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsAddModalOpen(false);
+        setIsEditModalOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutSide);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutSide);
+    };
+  }, [modalRef, buttonRef]);
 
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => setIsAddModalOpen(false);
@@ -134,7 +156,13 @@ function BranchCode() {
           confirmButtonText: "Close",
         });
       } else {
-        throw new Error("Failed to delete");
+        Swal.fire({
+          icon: "warning",
+          title: "Warning!",
+          text: error.response.data.message,
+          confirmButtonColor: "#808080",
+          confirmButtonText: "Close",
+        });
       }
     } finally {
       setIsRefresh(false);
@@ -246,6 +274,8 @@ function BranchCode() {
           <div>
             <button
               onClick={openAddModal}
+              type="button"
+              ref={buttonRef}
               className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <FontAwesomeIcon icon={faPlus} /> Add Branch Code
@@ -348,11 +378,13 @@ function BranchCode() {
         </TableContainer>
       </div>
       <AddBranchCodeModal
+        modalRef={modalRef}
         isOpen={isAddModalOpen}
         onClose={closeAddModal}
         isRefresh={setIsRefresh}
       />
       <EditBranchCodeModal
+        modalRef={modalRef}
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
         isRefresh={setIsRefresh}

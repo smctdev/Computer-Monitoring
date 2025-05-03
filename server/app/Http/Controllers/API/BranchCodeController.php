@@ -9,6 +9,7 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Log as BranchLog;
+use Illuminate\Support\Facades\Auth;
 
 class BranchCodeController extends Controller
 {
@@ -84,7 +85,7 @@ class BranchCodeController extends Controller
         $branch = BranchCode::create([
             'branch_name'                   =>              $request->branch_name,
             'branch_name_english'           =>              $request->branch_name_english
-        ], 200);
+        ]);
 
         Department::create([
             'branch_code_id'                =>              $branch->id,
@@ -92,7 +93,7 @@ class BranchCodeController extends Controller
         ]);
 
         BranchLog::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Added a branch name: ' . $branch->branch_name_english . ' (' . $branch->branch_name . ').'
         ]);
 
@@ -172,7 +173,7 @@ class BranchCodeController extends Controller
         ]);
 
         BranchLog::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Updated a branch name from: ' . $oldBranchNameEnglish . ' to: ' . $branchCode->branch_name_english . ' and branch code from: ' . $oldBranchName . ' to: ' . $branchCode->branch_name . '.'
         ]);
 
@@ -199,15 +200,17 @@ class BranchCodeController extends Controller
 
         $users = $branchCode->users()->count();
 
-        if ($users > 0) {
+        $departments = $branchCode->departments()->count();
+
+        if ($users > 0 || $departments > 0) {
             return response()->json([
                 'status'                =>              false,
-                'message'               =>              'You cannot delete a branch code that is already in used by users.'
+                'message'               =>              'You cannot delete a branch code that is already in used by users or departments.'
             ], 422);
         }
 
         BranchLog::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Deleted the branch code: ' . $branchCode->branch_name
         ]);
 

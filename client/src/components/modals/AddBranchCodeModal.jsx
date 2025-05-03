@@ -2,7 +2,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import api from "../../api/axios";
 
-export default function AddBranchCodeModal({ isOpen, onClose, isRefresh }) {
+export default function AddBranchCodeModal({ isOpen, onClose, isRefresh, modalRef }) {
   const [branchName, setBranchName] = useState("");
   const [branchNameEnglish, setBranchNameEnglish] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
@@ -81,7 +81,7 @@ export default function AddBranchCodeModal({ isOpen, onClose, isRefresh }) {
     <>
       {isOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96">
+          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96" ref={modalRef}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 Add Branches

@@ -13,7 +13,7 @@ function QrCode({ isOpen, onClose, qrId }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isOpen || !qrId) {
+    if (!isOpen) {
       return;
     }
     const fetchQrData = async () => {

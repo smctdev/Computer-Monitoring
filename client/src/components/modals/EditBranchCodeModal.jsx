@@ -7,6 +7,7 @@ export default function EditBranchCodeModal({
   onClose,
   isRefresh,
   id,
+  modalRef,
 }) {
   const [branchName, setBranchName] = useState("");
   const [branchNameEnglish, setBranchNameEnglish] = useState("");
@@ -42,7 +43,6 @@ export default function EditBranchCodeModal({
     setLoading(true);
     isRefresh(true);
     try {
-
       const response = await api.post(`/update-branch-code/${id}`, {
         branch_name: branchName,
         branch_name_english: branchNameEnglish,
@@ -106,7 +106,7 @@ export default function EditBranchCodeModal({
     <>
       {isOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96">
+          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96" ref={modalRef}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 Edit Branch Code

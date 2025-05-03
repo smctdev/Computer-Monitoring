@@ -7,6 +7,7 @@ export default function EditDepartmentModal({
   onClose,
   isRefresh,
   id,
+  modalRef,
 }) {
   const [departmentName, setDepartmentName] = useState("");
   const [branchCodeId, setBranchCodeId] = useState("");
@@ -20,7 +21,6 @@ export default function EditDepartmentModal({
       return;
     }
     const fetchBranchCodes = async () => {
-
       try {
         const response = await api.get("/branches");
         if (response.status === 200) {
@@ -62,14 +62,10 @@ export default function EditDepartmentModal({
     setLoading(true);
     isRefresh(true);
     try {
-
-      const response = await api.post(
-        `/update-department/${id}`,
-        {
-          department_name: departmentName,
-          branch_code_id: branchCodeId,
-        }
-      );
+      const response = await api.post(`/update-department/${id}`, {
+        department_name: departmentName,
+        branch_code_id: branchCodeId,
+      });
       if (response.status === 200) {
         const Toast = Swal.mixin({
           toast: true,
@@ -129,7 +125,7 @@ export default function EditDepartmentModal({
     <>
       {isOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96">
+          <div className="w-full p-6 bg-white rounded-lg shadow-lg sm:w-96" ref={modalRef}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 Edit Department

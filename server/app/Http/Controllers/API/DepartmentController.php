@@ -116,7 +116,7 @@ class DepartmentController extends Controller
         $department = Department::find($id);
 
         $validation = Validator::make($request->all(), [
-            'department_name'           =>              ['required', Rule::unique('departments')->where(fn($query) => $query->where('branch_code_id', $request->branch_code_id)->ignore($department->id))],
+            'department_name'           =>              ['required', Rule::unique('departments')->where(fn($query) => $query->where('branch_code_id', $request->branch_code_id))->ignore($department->id)],
             'branch_code_id'            =>              ['required', 'exists:branch_codes,id'],
         ]);
 

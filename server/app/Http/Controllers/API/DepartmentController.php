@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Log;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -68,7 +69,7 @@ class DepartmentController extends Controller
         ]);
 
         Log::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Added a department: ' . $department->department_name . ' and branch code: ' . $department->branchCode->branch_name
         ]);
 
@@ -115,7 +116,7 @@ class DepartmentController extends Controller
         $department = Department::find($id);
 
         $validation = Validator::make($request->all(), [
-            'department_name'           =>              ['required', 'unique:departments,department_name,' . $department->id],
+            'department_name'           =>              ['required', Rule::unique('departments')->where(fn($query) => $query->where('branch_code_id', $request->branch_code_id)->where('id', '!=', $department->id))],
             'branch_code_id'            =>              ['required', 'exists:branch_codes,id'],
         ]);
 
@@ -143,7 +144,7 @@ class DepartmentController extends Controller
         ]);
 
         Log::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Updated a department from: ' . $oldDepartmentName . ' to: ' . $department->department_name . ' and branch code from: ' . $oldBranchCode . ' to: ' . $department->branchCode->branch_name
         ]);
 
@@ -178,7 +179,7 @@ class DepartmentController extends Controller
         }
 
         Log::create([
-            'user_id'           =>              auth()->user()->id,
+            'user_id'           =>              Auth::id(),
             'log_data'          =>              'Deleted the department : ' . $department->department_name . ' that has the branch code: ' . $department->branchCode->branch_name
         ]);
 

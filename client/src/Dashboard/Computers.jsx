@@ -146,7 +146,7 @@ export const TableComponent = () => {
       },
       {
         Header: "Position",
-        accessor: (row) => `${row.position.position_name}`,
+        accessor: (row) => `${row.position?.position_name}`,
       },
       {
         Header: "Action",

@@ -82,7 +82,7 @@ export const TableComponent = () => {
       const filtered = computerUser.filter(
         (item) =>
           item.name.toLowerCase().includes(value.toLowerCase()) ||
-          item.position.position_name
+          item.position?.position_name
             .toLowerCase()
             .includes(value.toLowerCase()) ||
           item.branch_code.branch_name

@@ -21,7 +21,10 @@ function QrCode({ isOpen, onClose, qrId }) {
       try {
         const response = await api.get(`computer-user-specs/${qrId}`);
         if (response.data.status) {
-          setId(response?.data?.computer_user_specs?.computers[0]?.id);
+          setId({
+            name: response?.data?.computer_user_specs?.name,
+            id: `${window?.location?.href}/${response?.data?.computer_user_specs?.computers[0]?.id}`
+          });
           setSpecs(response?.data?.computer_user_specs);
         }
       } catch (error) {
@@ -37,7 +40,7 @@ function QrCode({ isOpen, onClose, qrId }) {
     toPng(qrCodeRef.current)
       .then(function (dataUrl) {
         const link = document.createElement("a");
-        link.download = `${id}.png`;
+        link.download = `${specs.name}.png`;
         link.href = dataUrl;
         link.click();
       })

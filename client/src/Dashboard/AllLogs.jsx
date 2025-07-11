@@ -29,14 +29,14 @@ function AllLogs() {
   const [filteredLogs, setFilteredLogs] = useState([]);
 
   useEffect(() => {
-    setFilteredLogs(logs);
-  }, [logs]);
+    setFilteredLogs(logs.data || []);
+  }, [logs.data]);
 
   const handleSearchChange = (event) => {
     const searchValue = event.target.value.toLowerCase();
     setSearchTerm(searchValue);
 
-    const filteredData = logs.filter(
+    const filteredData = logs.data.filter(
       (log) =>
         log.log_data.toLowerCase().includes(searchValue) ||
         log.user.firstName.toLowerCase().includes(searchValue) ||
@@ -45,7 +45,7 @@ function AllLogs() {
         log.created_at.toLowerCase().includes(searchValue)
     );
 
-    setFilteredLogs(filteredData);
+    setFilteredLogs(filteredData || []);
     setPage(0);
   };
 
@@ -60,8 +60,14 @@ function AllLogs() {
 
   useEffect(() => {
     const fetchLogs = async () => {
+      const payload = {
+        page: page + 1,
+        per_page: rowsPerPage,
+      };
       try {
-        const response = await api.get("/logs");
+        const response = await api.get("/logs", {
+          params: payload,
+        });
         const log = response.data.logs;
 
         setLogs(log);
@@ -73,7 +79,7 @@ function AllLogs() {
     };
 
     fetchLogs();
-  }, []);
+  }, [page, rowsPerPage]);
 
   const columns = useMemo(
     () => [
@@ -112,6 +118,7 @@ function AllLogs() {
       {
         columns,
         data,
+        manualPagination: true,
       },
       useSortBy
     );
@@ -209,20 +216,18 @@ function AllLogs() {
                   </TableCell>
                 </TableRow>
               ) : (
-                rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    prepareRow(row);
-                    return (
-                      <TableRow {...row.getRowProps()}>
-                        {row.cells.map((cell) => (
-                          <TableCell align="center" {...cell.getCellProps()}>
-                            {cell.render("Cell")}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    );
-                  })
+                rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <TableRow {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <TableCell align="center" {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })
               )}
               {!loading && filteredLogs.length === 0 && (
                 <TableRow>
@@ -238,7 +243,7 @@ function AllLogs() {
           <TablePagination
             rowsPerPageOptions={[10, 15, 20]}
             component="div"
-            count={filteredLogs.length}
+            count={logs.total}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

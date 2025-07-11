@@ -182,6 +182,14 @@ const Extract = () => {
                 Back to dashboard
               </Link>
             </div>
+            <div className="flex justify-center mt-4">
+              <Link
+                to="/qr"
+                className="inline-block px-4 py-2 text-blue-500 transition duration-300 ease-in-out border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white"
+              >
+                Scan QR
+              </Link>
+            </div>
             <CardContent>
               <Typography variant="h5">Computer Details</Typography>
               <Grid container spacing={2}>

@@ -71,15 +71,6 @@ function Codes() {
   };
 
   const handleScanWebCam = (result) => {
-    if (!result) {
-      Swal.fire({
-        title: "Error",
-        icon: "error",
-        text: "Invalid QR code or no such QR code found in the image",
-      });
-      return;
-    }
-
     const parsedResult = JSON.parse(result);
 
     if (parsedResult?.name || parsedResult?.id) {

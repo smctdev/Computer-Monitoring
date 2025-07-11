@@ -77,14 +77,18 @@ function Codes() {
     if (parsedResult?.name || parsedResult?.id) {
       setScanResultWebCam(parsedResult);
 
-      linkRef.current.click();
+      setTimeout(() => {
+        linkRef.current.click();
+      }, 2000);
     } else {
       setScanResultWebCam({
         id: `${window.location.origin}/computers/${result}`,
         name: result,
       });
 
-      linkRef.current.click();
+      setTimeout(() => {
+        linkRef.current.click();
+      }, 2000);
     }
   };
 

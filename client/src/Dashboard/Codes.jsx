@@ -71,6 +71,7 @@ function Codes() {
   };
 
   const handleScanWebCam = (result) => {
+    if (!result) return;
     const parsedResult = JSON.parse(result);
 
     if (parsedResult?.name || parsedResult?.id) {

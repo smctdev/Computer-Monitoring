@@ -76,39 +76,15 @@ function Codes() {
 
     if (parsedResult?.name || parsedResult?.id) {
       setScanResultWebCam(parsedResult);
-      Swal.fire({
-        title: "Success",
-        icon: "success",
-        text: `${parsedResult.name} QR code scanned successfully`,
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Open",
-        cancelButtonText: "Close",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          linkRef.current.click();
-        }
-      });
+
+      linkRef.current.click();
     } else {
       setScanResultWebCam({
         id: `${window.location.origin}/computers/${result}`,
         name: result,
       });
-      Swal.fire({
-        title: "Success",
-        icon: "success",
-        text: `${result} QR code scanned successfully`,
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Open",
-        cancelButtonText: "Close",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          linkRef.current.click();
-        }
-      });
+
+      linkRef.current.click();
     }
   };
 

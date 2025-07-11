@@ -3,20 +3,66 @@ import { Container, Card, CardContent, Grid, Button } from "@mui/material";
 import { makeStyles } from "@material-ui/core";
 import QrReader from "react-qr-reader";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function Codes() {
   const [scanResultFile, setScanResultFile] = useState("");
   const [scanResultWebCam, setScanResultWebCam] = useState("");
   const classes = useStyles();
   const qrRef = useRef(null);
+  const linkRef = useRef(null);
 
   const handleErrorFile = (error) => {
     console.error(error);
   };
 
   const handleScanFile = (result) => {
-    if (result) {
-      setScanResultFile(result);
+    if (!result) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Invalid QR code or no such QR code found in the image",
+      });
+      return;
+    }
+
+    const parsedResult = JSON.parse(result);
+
+    if (parsedResult?.name || parsedResult?.id) {
+      setScanResultFile(parsedResult);
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: `${parsedResult.name} QR code scanned successfully`,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Open",
+        cancelButtonText: "Close",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          linkRef.current.click();
+        }
+      });
+    } else {
+      setScanResultFile({
+        id: `${window.location.origin}/computers/${result}`,
+        name: result,
+      });
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: `${result} QR code scanned successfully`,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Open",
+        cancelButtonText: "Close",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          linkRef.current.click();
+        }
+      });
     }
   };
 
@@ -25,8 +71,52 @@ function Codes() {
   };
 
   const handleScanWebCam = (result) => {
-    if (result) {
-      setScanResultWebCam(result);
+    if (!result) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Invalid QR code or no such QR code found in the image",
+      });
+      return;
+    }
+
+    const parsedResult = JSON.parse(result);
+
+    if (parsedResult?.name || parsedResult?.id) {
+      setScanResultWebCam(parsedResult);
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: `${parsedResult.name} QR code scanned successfully`,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Open",
+        cancelButtonText: "Close",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          linkRef.current.click();
+        }
+      });
+    } else {
+      setScanResultWebCam({
+        id: `${window.location.origin}/computers/${result}`,
+        name: result,
+      });
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: `${result} QR code scanned successfully`,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Open",
+        cancelButtonText: "Close",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          linkRef.current.click();
+        }
+      });
     }
   };
 
@@ -58,13 +148,13 @@ function Codes() {
               />
 
               <h3 className="mt-3">
-                Computer ID:
+                Computer Link:
                 <br />
               </h3>
               {scanResultWebCam && (
-                <Link to={`/computers/${scanResultWebCam}`}>
+                <Link to={scanResultWebCam?.id} ref={linkRef}>
                   <Button>
-                    <b>{scanResultWebCam}</b>
+                    <b>{scanResultWebCam?.name}</b>
                   </Button>
                 </Link>
               )}
@@ -88,20 +178,20 @@ function Codes() {
                 legacyMode
               />
               <h3 className="mt-3">
-                Computer ID:
+                Computer Link:
                 <br />
               </h3>
               {scanResultFile !== "[]"
                 ? scanResultFile && (
-                    <Link to={`/computers/${scanResultFile}`}>
+                    <Link to={scanResultFile?.id} ref={linkRef}>
                       <Button>
-                        <b>{scanResultFile}</b>
+                        <b>{scanResultFile?.name}</b>
                       </Button>
                     </Link>
                   )
                 : scanResultFile && (
                     <Button>
-                      <b>No computer id found.</b>
+                      <b>No computer link found.</b>
                     </Button>
                   )}
             </Grid>
@@ -112,7 +202,7 @@ function Codes() {
   );
 }
 
-const useStyles = makeStyles(({
+const useStyles = makeStyles({
   container: {
     marginTop: 10,
   },
@@ -130,6 +220,6 @@ const useStyles = makeStyles(({
     marginTop: 10,
     marginBottom: 20,
   },
-}));
+});
 
 export default Codes;

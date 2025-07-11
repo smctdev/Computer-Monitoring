@@ -11,10 +11,14 @@ class LogController extends Controller
 
     public function index()
     {
-        $logs = Log::with('user', 'computerUser')->orderBy('created_at', 'desc')->get();
+        $per_page = request('per_page') ?: 10;
+
+        $logs = Log::with('user', 'computerUser')
+            ->orderBy('created_at', 'desc')
+            ->paginate($per_page);
 
 
-        if($logs->count() > 0) {
+        if ($logs->count() > 0) {
             return response()->json([
                 'status'                =>              true,
                 'message'               =>             'Logs fetched successfully.',

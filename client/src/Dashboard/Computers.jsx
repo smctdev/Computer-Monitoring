@@ -179,7 +179,7 @@ export const TableComponent = () => {
                 <Button
                   type="button"
                   className="hover:text-blue-500"
-                  onClick={openQrPopup(row.original.id)}
+                  onClick={openQrPopup(row?.original?.id)}
                 >
                   <FontAwesomeIcon icon={faQrcode} />
                 </Button>

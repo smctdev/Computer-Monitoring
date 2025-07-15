@@ -1,5 +1,5 @@
-# Use Node.js as a base image
-FROM node:16-alpine
+# Use an official Node runtime as a parent image
+FROM node:16-alpine AS build
 
 # Set the working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ./package*.json ./
 
 # Install the dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install --force
 
 # Copy the remaining application files to the working directory
 COPY . .
@@ -16,9 +16,17 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install a simple HTTP server to serve static files
-RUN npm install -g serve
+# Use a lightweight server to serve the static files
+FROM nginx:alpine
 
-EXPOSE 8001
+# Copy the build files to the NGINX server
+COPY --from=build /app/build /usr/share/nginx/html
 
-CMD ["serve", "-s", "build", "-l", "8001"]
+# Copy the NGINX configuration file
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 9001
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

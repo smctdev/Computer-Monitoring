@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9001:9001"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - ./src:/app/src 
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - ./src:/app/src 
     stdin_open: true
     tty: true

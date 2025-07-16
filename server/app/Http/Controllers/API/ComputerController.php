@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Log as ComputerLog;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ComputerController extends Controller
 {
@@ -457,7 +458,8 @@ class ComputerController extends Controller
                 $computerUser->update([
                     'email'                   =>          $request->email,
                     'position_id'             =>          $request->position,
-                    'branch_code_id'          =>          $request->branch_code
+                    'branch_code_id'          =>          $request->branch_code,
+                    'name'                    =>          Str::title($request->name)
                 ]);
 
                 ComputerLog::create([

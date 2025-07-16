@@ -401,7 +401,8 @@ class ComputerController extends Controller
             'application_content.*'             =>              ['string'],
             'position'                          =>              ['required', 'exists:positions,id'],
             'email'                             =>              ['required', 'email', 'unique:computer_users,email,' . $computerUserId, 'regex:/^\S+@\S+\.\S+$/'],
-            'branch_code'                       =>              ['required', 'exists:branch_codes,id']
+            'branch_code'                       =>              ['required', 'exists:branch_codes,id'],
+            'name'                              =>              ['required', 'string', 'unique:computer_users,name,' . $computerUserId],
         ]);
 
         if ($validation->fails()) {

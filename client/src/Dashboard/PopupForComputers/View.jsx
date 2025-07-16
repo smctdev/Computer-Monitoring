@@ -119,6 +119,17 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
     });
   };
 
+  const handleNameChange = (event) => {
+    const newValue = event.target.value
+      ? event.target.value
+      : !isLoading && specs?.name;
+
+    setUser({
+      ...user,
+      name: newValue ? newValue : null,
+    });
+  };
+
   const handlePositionChange = (event, newValue) => {
     setUser({
       ...user,
@@ -244,6 +255,7 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
           email: user.email,
           position: user.position,
           branch_code: user.branch_code,
+          name: user.name,
         }
       );
       if (response.data.status === true) {
@@ -724,11 +736,18 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
                   id="outlined-read-only-input"
                   label="Name of User"
                   defaultValue={!isLoading && specs?.name}
-                  InputProps={{
-                    readOnly: true,
-                  }}
                   style={{ marginBottom: "10px", width: "100%" }}
+                  onChange={handleNameChange}
                 />
+                {validationErrors.name ? (
+                  <span className="text-red-500">
+                    {validationErrors.name.map((error, index) => (
+                      <span key={index}>{error}</span>
+                    ))}
+                  </span>
+                ) : (
+                  ""
+                )}
                 <TextField
                   id="outlined-read-only-input"
                   label="User Email"

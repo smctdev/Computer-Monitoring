@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\Log as ComputerUserLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ComputerUserController extends Controller
 {
@@ -75,7 +76,7 @@ class ComputerUserController extends Controller
 
 
         $user = ComputerUser::create([
-            'name'                    =>          $request->name,
+            'name'                    =>          Str::title($request->name),
             'email'                   =>          $request->email ?: str_replace(' ', '', strtolower($request->name)) . '.smct@gmail.com',
             'position_id'             =>          $request->position,
             'branch_code_id'          =>          $request->branch_code

@@ -425,7 +425,7 @@ class ComputerController extends Controller
         if ($request->status !== $old_status) {
             ComputerLog::create([
                 'user_id'                   =>              auth()->user()->id,
-                'computer_user_id'          =>              $computerId,
+                'computer_user_id'          =>              $computerUserId,
                 'log_data'                  =>              "Computer user status changed from {$old_status} to {$request->status}"
             ]);
         }

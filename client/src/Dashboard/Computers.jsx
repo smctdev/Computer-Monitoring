@@ -153,10 +153,14 @@ export const TableComponent = () => {
         Cell: ({ row }) => (
           <div
             className={`px-2 py-1 rounded-full capitalize font-bold text-xs ${
-              row.original?.status === "active" ? "bg-blue-500" : "bg-red-500"
+              row.original?.status === "active"
+                ? "bg-green-500"
+                : row.original?.status === "transferred_to_branch"
+                ? "bg-blue-500"
+                : "bg-orange-300"
             } text-white`}
           >
-            {row.original?.status}
+            {row.original?.status?.replace(/_/g, " ")}
           </div>
         ),
       },

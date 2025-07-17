@@ -848,7 +848,7 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
                   id="status"
                   freeSolo
                   defaultValue={!isLoading && specs?.status}
-                  options={["active", "resigned"]}
+                  options={["active", "resigned", "transferred_to_branch"]}
                   renderInput={(params) => (
                     <TextField
                       {...params}

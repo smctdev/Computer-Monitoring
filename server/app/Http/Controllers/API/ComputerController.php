@@ -405,7 +405,7 @@ class ComputerController extends Controller
             'email'                             =>              ['required', 'email', 'unique:computer_users,email,' . $computerUserId, 'regex:/^\S+@\S+\.\S+$/'],
             'branch_code'                       =>              ['required', 'exists:branch_codes,id'],
             'name'                              =>              ['required', 'string', 'unique:computer_users,name,' . $computerUserId],
-            'status'                            =>              ['required', Rule::in(['active', 'resigned'])],
+            'status'                            =>              ['required', Rule::in(['active', 'resigned', 'transferred_to_branch'])],
         ]);
 
         if ($validation->fails()) {

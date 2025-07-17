@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Log as ComputerLog;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ComputerController extends Controller
 {
@@ -404,6 +405,7 @@ class ComputerController extends Controller
             'email'                             =>              ['required', 'email', 'unique:computer_users,email,' . $computerUserId, 'regex:/^\S+@\S+\.\S+$/'],
             'branch_code'                       =>              ['required', 'exists:branch_codes,id'],
             'name'                              =>              ['required', 'string', 'unique:computer_users,name,' . $computerUserId],
+            'status'                            =>              ['required', Rule::in(['active', 'resigned'])],
         ]);
 
         if ($validation->fails()) {
@@ -459,7 +461,8 @@ class ComputerController extends Controller
                     'email'                   =>          $request->email,
                     'position_id'             =>          $request->position,
                     'branch_code_id'          =>          $request->branch_code,
-                    'name'                    =>          Str::title($request->name)
+                    'name'                    =>          Str::title($request->name),
+                    'status'                  =>          $request->status
                 ]);
 
                 ComputerLog::create([

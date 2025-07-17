@@ -149,6 +149,18 @@ export const TableComponent = () => {
         accessor: (row) => `${row.position?.position_name}`,
       },
       {
+        Header: "Status",
+        Cell: ({ row }) => (
+          <div
+            className={`px-2 py-1 rounded-full capitalize font-bold text-xs ${
+              row.original?.status === "active" ? "bg-blue-500" : "bg-red-500"
+            } text-white`}
+          >
+            {row.original?.status}
+          </div>
+        ),
+      },
+      {
         Header: "Action",
         Cell: ({ row }) => (
           <div>
@@ -258,7 +270,7 @@ export const TableComponent = () => {
           <TableBody {...getTableBodyProps()}>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   {[...Array(3)].map((_, i) => (
                     <div key={i} className="w-full p-4 rounded">
                       <div className="flex space-x-4 animate-pulse">
@@ -277,8 +289,22 @@ export const TableComponent = () => {
                   prepareRow(row);
                   return (
                     <TableRow {...row.getRowProps()}>
-                      {row.cells.map((cell) => (
-                        <TableCell align="center" {...cell.getCellProps()}>
+                      {row.cells.map((cell, cellIndex) => (
+                        <TableCell
+                          align="center"
+                          key={cellIndex}
+                          className={`${
+                            cell.row.original.status === "resigned" &&
+                            "bg-red-50"
+                          }`}
+                          {...cell.getCellProps()}
+                        >
+                          {cell.row.original.status === "resigned" &&
+                            cellIndex === 0 && (
+                              <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-red-600 animate-pulse">
+                                This computer user has already resigned.
+                              </div>
+                            )}
                           {cell.render("Cell")}
                         </TableCell>
                       ))}

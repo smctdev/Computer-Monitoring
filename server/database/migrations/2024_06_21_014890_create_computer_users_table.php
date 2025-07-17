@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('position_id')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
+            $table->enum('status', ['active', 'resigned'])->default('active');
             $table->timestamps();
 
             $table->foreign('branch_code_id')->references('id')->on('branch_codes')->onDelete('restrict');

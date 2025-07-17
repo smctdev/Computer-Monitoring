@@ -98,6 +98,8 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
       email: specs.email,
       branch_code: specs.branch_code ? specs.branch_code.id : null,
       position: specs.position ? specs.position.id : null,
+      name: specs.name,
+      status: specs.status,
     });
   }, [specs, applicationContent]);
 
@@ -127,6 +129,13 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
     setUser({
       ...user,
       name: newValue ? newValue : null,
+    });
+  };
+
+  const handleStatusChange = (event, newValue) => {
+    setUser({
+      ...user,
+      status: newValue ? newValue : null,
     });
   };
 
@@ -256,6 +265,7 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
           position: user.position,
           branch_code: user.branch_code,
           name: user.name,
+          status: user.status,
         }
       );
       if (response.data.status === true) {
@@ -828,6 +838,30 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
                 {validationErrors.position ? (
                   <span className="text-red-500">
                     {validationErrors.position.map((error, index) => (
+                      <span key={index}>{error}</span>
+                    ))}
+                  </span>
+                ) : (
+                  ""
+                )}
+                <Autocomplete
+                  id="status"
+                  freeSolo
+                  defaultValue={!isLoading && specs?.status}
+                  options={["active", "resigned"]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Status"
+                      style={{ marginBottom: "10px", marginTop: "10px" }}
+                    />
+                  )}
+                  value={user.status || ""}
+                  onChange={handleStatusChange}
+                />
+                {validationErrors.status ? (
+                  <span className="text-red-500">
+                    {validationErrors.status.map((error, index) => (
                       <span key={index}>{error}</span>
                     ))}
                   </span>

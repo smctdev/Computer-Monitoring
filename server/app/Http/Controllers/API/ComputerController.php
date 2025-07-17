@@ -399,7 +399,7 @@ class ComputerController extends Controller
     public function updateApplicationAndUserDetails(Request $request, $computerId, $computerUserId)
     {
         $validation = Validator::make($request->all(), [
-            'application_content'               =>              ['required', 'array'],
+            'application_content'               =>              ['array'],
             'application_content.*'             =>              ['string'],
             'position'                          =>              ['required', 'exists:positions,id'],
             'email'                             =>              ['required', 'email', 'unique:computer_users,email,' . $computerUserId, 'regex:/^\S+@\S+\.\S+$/'],
@@ -418,7 +418,27 @@ class ComputerController extends Controller
 
         $computer = Computer::find($computerId);
 
+        $computerUser = ComputerUser::find($computerUserId);
+
+        $old_status = $computerUser->status;
+
+        if ($request->status !== $old_status) {
+            ComputerLog::create([
+                'user_id'                   =>              auth()->user()->id,
+                'computer_user_id'          =>              $computerId,
+                'log_data'                  =>              "Computer user status changed from {$old_status} to {$request->status}"
+            ]);
+        }
+
         if (!$computer) {
+            $computerUser->update([
+                'email'                   =>          $request->email,
+                'position_id'             =>          $request->position,
+                'branch_code_id'          =>          $request->branch_code,
+                'name'                    =>          Str::title($request->name),
+                'status'                  =>          $request->status
+            ]);
+
             return response()->json([
                 'status'            => false,
                 'message'           => 'No computers found'
@@ -447,8 +467,6 @@ class ComputerController extends Controller
                     ]);
                 }
             }
-
-            $computerUser = ComputerUser::find($computerUserId);
 
             if (!$computerUser) {
                 return response([

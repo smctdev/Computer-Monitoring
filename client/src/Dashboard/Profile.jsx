@@ -442,7 +442,7 @@ function Placeholder() {
         <div className="flex items-center justify-center">
           <div className="flex gap-2 pb-10">
             <Link to="/dashboard">
-              <button className="h-10 mt-10 font-semibold text-white bg-gray-600 w-44 rounded-xl">
+              <button type="button" className="h-10 mt-10 font-semibold text-white bg-gray-600 w-44 rounded-xl">
                 Cancel
               </button>
             </Link>

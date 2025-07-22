@@ -134,7 +134,7 @@ function SideBar({ isSidebarOpen, toggleSidebar, setTitle, isSidebarIcon }) {
           <button
             type="button"
             onClick={toggleSidebar}
-            className="mt-4 text-black float-end md:hidden absolute top-0 right-5 cursor-pointer"
+            className="absolute top-0 mt-4 text-black cursor-pointer float-end md:hidden right-5"
           >
             <FontAwesomeIcon icon={faX} />
           </button>

@@ -176,6 +176,7 @@ export const TableComponent = () => {
             Swal.showLoading();
           },
         });
+        setRefresh(true);
         try {
           const response = await api.delete(`computer-user/${id}/delete`);
           if (response.status === 200) {
@@ -200,6 +201,8 @@ export const TableComponent = () => {
               text: "Failed to delete computer user",
             });
           }
+        } finally {
+          setRefresh(false);
         }
       }
     });
@@ -410,24 +413,23 @@ export const TableComponent = () => {
                           className={`${
                             cell.row.original.status === "resigned"
                               ? "bg-red-50"
-                              : cell.row.original.computers.length === 0
-                              ? "bg-yellow-50"
-                              : ""
+                              : cell.row.original.computers.length === 0 &&
+                                "bg-yellow-50"
                           }`}
                           {...cell.getCellProps()}
                         >
-                          {cell.row.original.status === "resigned" &&
-                            cellIndex === 0 && (
-                              <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-red-600 animate-pulse">
-                                This computer user has already resigned.
-                              </div>
-                            )}
-                          {cell.row.original.computers.length === 0 &&
-                            cellIndex === 0 && (
-                              <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-yellow-600 animate-pulse">
-                                This computer user has no computer assigned.
-                              </div>
-                            )}
+                          {cell.row.original.status === "resigned"
+                            ? cellIndex === 0 && (
+                                <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-red-600 animate-pulse">
+                                  This computer user has already resigned.
+                                </div>
+                              )
+                            : cell.row.original.computers.length === 0 &&
+                              cellIndex === 0 && (
+                                <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-yellow-600 animate-pulse">
+                                  This computer user has no computer assigned.
+                                </div>
+                              )}
                           {cell.render("Cell")}
                         </TableCell>
                       ))}

@@ -8,6 +8,7 @@ use App\Models\ComputerUser;
 use App\Models\Notification;
 use App\Models\Log as ComputerUserLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -161,6 +162,15 @@ class ComputerUserController extends Controller
      */
     public function destroy(ComputerUser $computerUser)
     {
-        //
+        if (Auth::id() !== 1) {
+            return response()->json('You are not authorized to perform this action.', 403);
+        }
+
+        $computerUser->delete();
+
+        return response()->json([
+            'status'                => true,
+            'message'               => 'Computer user deleted successfully.'
+        ], 200);
     }
 }

@@ -97,6 +97,7 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::delete('/position-delete/{id}', [PositionController::class, 'destroy']);
     Route::delete('/supplier-delete/{id}', [SupplierController::class, 'destroy']);
     Route::delete('/unit-delete/{id}', [UnitController::class, 'destroy']);
+    Route::delete('/computer-user/{computer_user}/delete', [ComputerUserController::class, 'destroy']);
 });
 
 // GET

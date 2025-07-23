@@ -7,6 +7,7 @@ import {
   faArrowUpRightFromSquare,
   faGears,
   faQrcode,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Specs from "./PopupForComputers/Specs";
@@ -30,6 +31,7 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ComputerIcon from "@mui/icons-material/Computer";
+import Swal from "sweetalert2";
 
 //THIS IS THE TABLE LIST OF COMPUTERS
 export const TableComponent = () => {
@@ -130,6 +132,56 @@ export const TableComponent = () => {
     [isQrPopupOpen]
   );
 
+  const handleDelete = (id) => () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action can't be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleting...",
+          text: "Please wait...",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+        try {
+          const response = await api.delete(`computer-user/${id}/delete`);
+          if (response.status === 200) {
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: response.data.message,
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting computer user:", error);
+          if (error.response.status === 403) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: error.response.data,
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to delete computer user",
+            });
+          }
+        }
+      }
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -201,6 +253,13 @@ export const TableComponent = () => {
                 </Button>
               </Tooltip>
             )}
+            <button
+              type="button"
+              className="text-red-500"
+              onClick={handleDelete(row.original.id)}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
           </div>
         ),
       },
@@ -298,8 +357,11 @@ export const TableComponent = () => {
                           align="center"
                           key={cellIndex}
                           className={`${
-                            cell.row.original.status === "resigned" &&
-                            "bg-red-50"
+                            cell.row.original.status === "resigned"
+                              ? "bg-red-50"
+                              : cell.row.original.computers.length === 0
+                              ? "bg-yellow-50"
+                              : ""
                           }`}
                           {...cell.getCellProps()}
                         >
@@ -307,6 +369,12 @@ export const TableComponent = () => {
                             cellIndex === 0 && (
                               <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-red-600 animate-pulse">
                                 This computer user has already resigned.
+                              </div>
+                            )}
+                          {cell.row.original.computers.length === 0 &&
+                            cellIndex === 0 && (
+                              <div className="absolute left-0 right-0 w-full mt-5 text-xl font-extrabold text-yellow-600 animate-pulse">
+                                This computer user has no computer assigned.
                               </div>
                             )}
                           {cell.render("Cell")}

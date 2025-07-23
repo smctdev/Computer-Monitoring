@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useTable, useSortBy } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,6 +8,7 @@ import {
   faGears,
   faQrcode,
   faTrash,
+  faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Specs from "./PopupForComputers/Specs";
@@ -48,6 +49,28 @@ export const TableComponent = () => {
   const [specsId, setSpecsId] = useState(0);
   const [viewId, setViewId] = useState(0);
   const [qrId, setQrId] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const divRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target) &&
+        divRef.current &&
+        !divRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchComputerUser = async () => {
@@ -182,6 +205,12 @@ export const TableComponent = () => {
     });
   };
 
+  const handleOpenDropdown = (id) => () => {
+    setIsDropdownOpen((prev) => ({
+      [id]: !prev[id],
+    }));
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -219,52 +248,74 @@ export const TableComponent = () => {
       {
         Header: "Action",
         Cell: ({ row }) => (
-          <div>
-            {row.original.action.includes("Specs") && (
-              <Tooltip placement="top" title="View Specs" arrow>
-                <Button
-                  type="button"
-                  className="hover:text-blue-500"
-                  onClick={openSpecsPopup(row.original.id)}
-                >
-                  <FontAwesomeIcon icon={faGears} />
-                </Button>
-              </Tooltip>
-            )}
-            {row.original.action.includes("View") && (
-              <Tooltip placement="top" title="View Details" arrow>
-                <Button
-                  type="button"
-                  className="hover:text-blue-500"
-                  onClick={openViewPopup(row.original.id)}
-                >
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                </Button>
-              </Tooltip>
-            )}
-            {row.original.action.includes("Qr") && (
-              <Tooltip placement="top" title="View QR Code" arrow>
-                <Button
-                  type="button"
-                  className="hover:text-blue-500"
-                  onClick={openQrPopup(row?.original?.id)}
-                >
-                  <FontAwesomeIcon icon={faQrcode} />
-                </Button>
-              </Tooltip>
-            )}
-            <button
+          <div className="relative">
+            <Button
+              ref={buttonRef}
               type="button"
-              className="text-red-500"
-              onClick={handleDelete(row.original.id)}
+              variant="contained"
+              onClick={handleOpenDropdown(row.original.id)}
             >
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
+              <FontAwesomeIcon icon={faEllipsis} />
+            </Button>
+            {isDropdownOpen[row.original.id] && (
+              <div
+                ref={divRef}
+                className="absolute z-40 p-2 bg-gray-200 rounded right-20 top-10"
+              >
+                <div className="flex gap-2">
+                  {row.original.action.includes("Specs") && (
+                    <Tooltip placement="top" title="View Specs" arrow>
+                      <Button
+                        type="button"
+                        className="hover:text-blue-500"
+                        onClick={openSpecsPopup(row.original.id)}
+                      >
+                        <FontAwesomeIcon icon={faGears} />
+                      </Button>
+                    </Tooltip>
+                  )}
+                  {row.original.action.includes("View") && (
+                    <Tooltip placement="top" title="View Details" arrow>
+                      <Button
+                        type="button"
+                        className="hover:text-blue-500"
+                        onClick={openViewPopup(row.original.id)}
+                      >
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                      </Button>
+                    </Tooltip>
+                  )}
+                  {row.original.action.includes("Qr") && (
+                    <Tooltip placement="top" title="View QR Code" arrow>
+                      <Button
+                        type="button"
+                        className="hover:text-blue-500"
+                        onClick={openQrPopup(row?.original?.id)}
+                      >
+                        <FontAwesomeIcon icon={faQrcode} />
+                      </Button>
+                    </Tooltip>
+                  )}
+                  <Tooltip placement="top" title="Delete" arrow>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleDelete(row.original.id)}
+                    >
+                      <FontAwesomeIcon
+                        className="text-red-500"
+                        icon={faTrash}
+                      />
+                    </Button>
+                  </Tooltip>
+                </div>
+              </div>
+            )}
           </div>
         ),
       },
     ],
-    [openSpecsPopup, openViewPopup, openQrPopup]
+    [openSpecsPopup, openViewPopup, openQrPopup, isDropdownOpen]
   );
 
   const data = useMemo(() => filteredData, [filteredData]);

@@ -186,7 +186,7 @@ function User() {
                     <TextField
                       value={user.name}
                       onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
+                        setUser({ ...user, name: e.target.value.replace(/\s+/g, " ") })
                       }
                       id="name-user"
                       label="Full Name"

@@ -33,6 +33,7 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import ComputerIcon from "@mui/icons-material/Computer";
 import Swal from "sweetalert2";
+import { formatDate } from "date-fns";
 
 //THIS IS THE TABLE LIST OF COMPUTERS
 export const TableComponent = () => {
@@ -233,6 +234,19 @@ export const TableComponent = () => {
         accessor: (row) => `${row.position?.position_name}`,
       },
       {
+        Header: "Created At",
+        Cell: ({ row }) => (
+          <div className="text-sm text-gray-700">
+            {row?.original?.computers?.length > 0
+              ? formatDate(
+                  row?.original?.computers[0]?.created_at,
+                  "MMMM dd, yyyy"
+                )
+              : <span className="text-red-500">No computer yet!</span>}
+          </div>
+        ),
+      },
+      {
         Header: "Status",
         Cell: ({ row }) => (
           <div
@@ -387,7 +401,7 @@ export const TableComponent = () => {
           <TableBody {...getTableBodyProps()}>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6}>
+                <TableCell colSpan={7}>
                   {[...Array(3)].map((_, i) => (
                     <div key={i} className="w-full p-4 rounded">
                       <div className="flex space-x-4 animate-pulse">

@@ -19,6 +19,6 @@ RUN npm run build
 # Install a simple HTTP server to serve static files
 RUN npm install -g serve
 
-EXPOSE 9001
+EXPOSE 9008
 
-CMD ["serve", "-s", "build", "-l", "9001"]
+CMD ["serve", "-s", "build", "-l", "9008"]

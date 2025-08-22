@@ -24,6 +24,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . /var/www
 
 
-EXPOSE 9008
+EXPOSE 9002
 
 CMD ["php-fpm"]

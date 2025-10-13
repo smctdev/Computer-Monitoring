@@ -98,7 +98,7 @@ function QrCode({ isOpen, onClose, qrId }) {
           />
         </div>
         <div className="flex items-center justify-center">
-          <div className="mt-7 mb-14 size-60">
+          <div className="mt-7 mb-14 size-80">
             {isLoading ? (
               <>
                 <div className="w-64 h-64 border-8 border-blue-500 border-solid rounded-full border-t-transparent animate-spin"></div>
@@ -106,10 +106,9 @@ function QrCode({ isOpen, onClose, qrId }) {
             ) : (
               <>
                 <div
-                  ref={qrCodeRef}
                   onClick={isNoComputerSet ? errorDownloadQr : downloadQRCode}
                   style={{ cursor: "pointer" }}
-                  className="flex flex-col items-center justify-center"
+                  ref={qrCodeRef}
                 >
                   {isNoComputerSet ? (
                     <div
@@ -131,18 +130,18 @@ function QrCode({ isOpen, onClose, qrId }) {
                     <QRCode
                       value={JSON.stringify(id)}
                       logoImage={smct}
-                      logoWidth={50}
-                      logoHeight={25}
-                      fgColor="#1E3A8A"
-                      eyeColor="#1E40AF"
+                      logoWidth={200}
+                      logoHeight={100}
                       eyeRadius={[
                         { outer: [10, 10, 0, 10], inner: [5, 5, 0, 5] },
                         { outer: [10, 10, 10, 0], inner: [5, 5, 5, 0] },
                         { outer: [10, 0, 10, 10], inner: [5, 0, 5, 5] },
                       ]}
                       logoOpacity={1}
-                      logoPadding={1}
+                      logoPadding={0.5}
                       logoPaddingStyle="circle"
+                      size={1080}
+                      style={{ width: "100%", height: "100%" }}
                     />
                   )}
                 </div>

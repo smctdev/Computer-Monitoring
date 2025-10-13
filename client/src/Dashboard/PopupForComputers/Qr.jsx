@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import smct from "./../../img/smct.png";
-import { QRCode } from "react-qr-svg";
+// import { QRCode } from "react-qr-svg";
+import { QRCode } from "react-qrcode-logo";
 import { toPng } from "html-to-image";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
@@ -11,6 +12,7 @@ function QrCode({ isOpen, onClose, qrId }) {
   const [id, setId] = useState([]);
   const [specs, setSpecs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isNoComputerSet = id?.id?.split("/")?.pop() === "undefined";
 
   useEffect(() => {
     if (!isOpen) {
@@ -23,7 +25,7 @@ function QrCode({ isOpen, onClose, qrId }) {
         if (response.data.status) {
           setId({
             name: response?.data?.computer_user_specs?.name,
-            id: `${window?.location?.href}/${response?.data?.computer_user_specs?.computers[0]?.id}`
+            id: `${window?.location?.href}/${response?.data?.computer_user_specs?.computers[0]?.id}`,
           });
           setSpecs(response?.data?.computer_user_specs);
         }
@@ -73,7 +75,6 @@ function QrCode({ isOpen, onClose, qrId }) {
   if (!isOpen) {
     return null;
   }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-40">
       <div
@@ -106,14 +107,49 @@ function QrCode({ isOpen, onClose, qrId }) {
               <>
                 <div
                   ref={qrCodeRef}
-                  onClick={id ? downloadQRCode : errorDownloadQr}
+                  onClick={isNoComputerSet ? errorDownloadQr : downloadQRCode}
                   style={{ cursor: "pointer" }}
+                  className="flex flex-col items-center justify-center"
                 >
-                  <QRCode value={JSON.stringify(id)} />
+                  {isNoComputerSet ? (
+                    <div
+                      style={{
+                        width: 150,
+                        height: 150,
+                        backgroundColor: "#fff",
+                        color: "#1e3a8a",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "2px dashed #1e3a8a",
+                        borderRadius: 12,
+                      }}
+                    >
+                      No Data
+                    </div>
+                  ) : (
+                    <QRCode
+                      value={JSON.stringify(id)}
+                      logoImage={smct}
+                      logoWidth={50}
+                      logoHeight={25}
+                      quietZone={10}
+                      fgColor="#1E3A8A"
+                      eyeColor="#1E40AF"
+                      eyeRadius={[
+                        { outer: [10, 10, 0, 10], inner: [5, 5, 0, 5] },
+                        { outer: [10, 10, 10, 0], inner: [5, 5, 5, 0] },
+                        { outer: [10, 0, 10, 10], inner: [5, 0, 5, 5] },
+                      ]}
+                      logoOpacity={1}
+                      logoPadding={1}
+                      logoPaddingStyle="circle"
+                    />
+                  )}
+                  <h1 className="mt-3 text-base font-semibold text-center">
+                    Computer QR Code
+                  </h1>
                 </div>
-                <h1 className="mt-3 text-base font-semibold text-center">
-                  Computer QR Code
-                </h1>
               </>
             )}
           </div>

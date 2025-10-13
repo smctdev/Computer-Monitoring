@@ -133,7 +133,6 @@ function QrCode({ isOpen, onClose, qrId }) {
                       logoImage={smct}
                       logoWidth={50}
                       logoHeight={25}
-                      quietZone={10}
                       fgColor="#1E3A8A"
                       eyeColor="#1E40AF"
                       eyeRadius={[
@@ -146,10 +145,10 @@ function QrCode({ isOpen, onClose, qrId }) {
                       logoPaddingStyle="circle"
                     />
                   )}
-                  <h1 className="mt-3 text-base font-semibold text-center">
-                    Computer QR Code
-                  </h1>
                 </div>
+                <h1 className="mt-3 text-base font-semibold text-center">
+                  Computer QR Code
+                </h1>
               </>
             )}
           </div>

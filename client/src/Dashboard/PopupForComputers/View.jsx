@@ -56,6 +56,11 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
   const [user, setUser] = useState({});
   const [showAlert, setShowAlert] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const statusOptions = [
+    { value: "active", label: "Active" },
+    { value: "resigned", label: "Resigned" },
+    { value: "transferred_to_branch", label: "Transferred to Branch" },
+  ];
 
   const dismissAlert = () => {
     setShowAlert(false);
@@ -848,7 +853,8 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
                   id="status"
                   freeSolo
                   defaultValue={!isLoading && specs?.status}
-                  options={["active", "resigned", "transferred_to_branch"]}
+                  options={statusOptions}
+                  getOptionLabel={(option) => option.label}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -856,7 +862,13 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
                       style={{ marginBottom: "10px", marginTop: "10px" }}
                     />
                   )}
-                  value={user.status || ""}
+                  value={
+                    user?.status
+                      ? statusOptions.find(
+                          (option) => option.value === user.status
+                        )
+                      : ""
+                  }
                   onChange={handleStatusChange}
                 />
                 {validationErrors.status ? (

@@ -140,7 +140,7 @@ function View({ isOpen, onClose, viewId, onSubmit }) {
   const handleStatusChange = (event, newValue) => {
     setUser({
       ...user,
-      status: newValue ? newValue : null,
+      status: newValue ? newValue.value : null,
     });
   };
 

@@ -33,7 +33,7 @@ function Codes() {
       Swal.fire({
         title: "Success",
         icon: "success",
-        text: `${parsedResult.name} QR code scanned successfully`,
+        text: `QR code scanned successfully`,
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
@@ -52,7 +52,7 @@ function Codes() {
       Swal.fire({
         title: "Success",
         icon: "success",
-        text: `${result} QR code scanned successfully`,
+        text: `QR code scanned successfully`,
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
@@ -126,7 +126,7 @@ function Codes() {
               {scanResultWebCam && (
                 <Link to={scanResultWebCam?.id} ref={linkRef}>
                   <Button>
-                    <b>{scanResultWebCam?.name}</b>
+                    <b>VIEW DETAILS</b>
                   </Button>
                 </Link>
               )}
@@ -157,7 +157,7 @@ function Codes() {
                 ? scanResultFile && (
                     <Link to={scanResultFile?.id} ref={linkRef}>
                       <Button>
-                        <b>{scanResultFile?.name}</b>
+                        <b>VIEW DETAILS</b>
                       </Button>
                     </Link>
                   )

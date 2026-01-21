@@ -31,6 +31,7 @@ import { DateField } from "@mui/x-date-pickers/DateField";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import dayjs from "dayjs";
+import { useAuth } from "../context/AuthContext";
 
 const Extract = () => {
   const { id } = useParams();
@@ -44,6 +45,7 @@ const Extract = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchComputerData = async () => {
@@ -52,7 +54,7 @@ const Extract = () => {
         if (response.data.status) {
           setComputer(response.data.computer);
           const apps = response.data.computer.installed_applications.map(
-            (comp) => comp.application_content
+            (comp) => comp.application_content,
           );
           setApplicationContent(apps);
         } else {
@@ -84,7 +86,7 @@ const Extract = () => {
           remark_content: remarksContent,
           date: date,
           format: remark,
-        }
+        },
       );
       if (response.data.status === true) {
         const Toast = Swal.mixin({
@@ -155,8 +157,8 @@ const Extract = () => {
     document.title = cLoading
       ? "Computer Monitoring - Loading..."
       : computer
-      ? `Computer Monitoring - ${computer.computer_user.name} Computer Details`
-      : "Computer Monitoring - Not Found";
+        ? `Computer Monitoring - ${computer.computer_user.name} Computer Details`
+        : "Computer Monitoring - Not Found";
   });
   if (cLoading) {
     return (
@@ -175,12 +177,14 @@ const Extract = () => {
         <Container>
           <Card className="mt-20 mb-20">
             <div className="flex justify-center mt-4">
-              <Link
-                to="/dashboard"
-                className="inline-block px-4 py-2 text-blue-500 transition duration-300 ease-in-out border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white"
-              >
-                Back to dashboard
-              </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/dashboard"
+                  className="inline-block px-4 py-2 text-blue-500 transition duration-300 ease-in-out border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white"
+                >
+                  Back to dashboard
+                </Link>
+              )}
             </div>
             <div className="flex justify-center mt-4">
               <Link
@@ -282,7 +286,7 @@ const Extract = () => {
                             <TableCell align="center">
                               {format(
                                 new Date(unit.date_of_purchase),
-                                "yyyy-MM-dd"
+                                "yyyy-MM-dd",
                               )}
                             </TableCell>
                             <TableCell align="center">
@@ -315,7 +319,9 @@ const Extract = () => {
                         {computer.installed_applications
                           .slice(
                             0,
-                            showAll ? computer.installed_applications.length : 5
+                            showAll
+                              ? computer.installed_applications.length
+                              : 5,
                           )
                           .map((item, index) => (
                             <ListItem key={index}>
@@ -362,7 +368,7 @@ const Extract = () => {
                                     <div>
                                       {format(
                                         new Date(item.date),
-                                        "MMMM dd, yyyy"
+                                        "MMMM dd, yyyy",
                                       )}
                                     </div>
                                     {item.remark_content
@@ -389,135 +395,139 @@ const Extract = () => {
                     </div>
                   </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <form onSubmit={handleSubmit}>
-                    <Autocomplete
-                      multiple
-                      id="tags-outlined"
-                      options={[
-                        "Package",
-                        "SQL",
-                        "Anydesk",
-                        "WinRAR",
-                        "LAN Messenger",
-                        "Adobe Acrobat Reader",
-                        "Adobe Photoshop",
-                        "Microsoft Office",
-                        "Google Chrome",
-                        "Mozilla Firefox",
-                      ]}
-                      freeSolo
-                      value={applicationContent}
-                      onChange={handleApplications}
-                      renderTags={(tagValue, getTagProps) =>
-                        tagValue.map((option, index) => (
-                          <Chip
+                {isAuthenticated && (
+                  <Grid item xs={12}>
+                    <form onSubmit={handleSubmit}>
+                      <Autocomplete
+                        multiple
+                        id="tags-outlined"
+                        options={[
+                          "Package",
+                          "SQL",
+                          "Anydesk",
+                          "WinRAR",
+                          "LAN Messenger",
+                          "Adobe Acrobat Reader",
+                          "Adobe Photoshop",
+                          "Microsoft Office",
+                          "Google Chrome",
+                          "Mozilla Firefox",
+                        ]}
+                        freeSolo
+                        value={applicationContent}
+                        onChange={handleApplications}
+                        renderTags={(tagValue, getTagProps) =>
+                          tagValue.map((option, index) => (
+                            <Chip
+                              variant="outlined"
+                              label={option}
+                              {...getTagProps({ index })}
+                            />
+                          ))
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
                             variant="outlined"
-                            label={option}
-                            {...getTagProps({ index })}
+                            label="Installed Applications"
+                            placeholder="Installed Applications"
                           />
-                        ))
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label="Installed Applications"
-                          placeholder="Installed Applications"
-                        />
-                      )}
-                    />
-                    {validationErrors.application_content ? (
-                      <p className="text-red-500">
-                        {validationErrors.application_content.map(
-                          (error, index) => (
-                            <span key={index}>{error}</span>
-                          )
                         )}
-                      </p>
-                    ) : (
-                      ""
-                    )}
-                    <TextField
-                      label="Is it Formatted?"
-                      value={remark}
-                      onChange={(e) => setRemark(e.target.value)}
-                      select
-                      fullWidth
-                      margin="normal"
-                    >
-                      <MenuItem value="No">No</MenuItem>
-                      <MenuItem value="Yes">Formatted</MenuItem>
-                    </TextField>
-                    {validationErrors.format ? (
-                      <p className="text-red-500">
-                        {validationErrors.format.map((error, index) => (
-                          <span key={index}>{error}</span>
-                        ))}
-                      </p>
-                    ) : (
-                      ""
-                    )}
-                    <TextareaAutosize
-                      aria-multiline
-                      value={remarksContent}
-                      onChange={(e) => setRemarksContent(e.target.value)}
-                      placeholder="Enter Remarks..."
-                      style={{
-                        border: "1px solid #bdbdbd",
-                        borderRadius: "5px",
-                        paddingTop: "10px",
-                        paddingBottom: "10px",
-                        paddingLeft: "10px",
-                        width: "100%",
-                        maxWidth: "1120px",
-                        height: "35px",
-                        marginTop: "10px",
-                        overflow: "hidden",
-                        resize: "none",
-                      }}
-                    />
-                    {validationErrors.remark_content ? (
-                      <p className="text-red-500">
-                        {validationErrors.remark_content.map((error, index) => (
-                          <span key={index}>{error}</span>
-                        ))}
-                      </p>
-                    ) : (
-                      ""
-                    )}
+                      />
+                      {validationErrors.application_content ? (
+                        <p className="text-red-500">
+                          {validationErrors.application_content.map(
+                            (error, index) => (
+                              <span key={index}>{error}</span>
+                            ),
+                          )}
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                      <TextField
+                        label="Is it Formatted?"
+                        value={remark}
+                        onChange={(e) => setRemark(e.target.value)}
+                        select
+                        fullWidth
+                        margin="normal"
+                      >
+                        <MenuItem value="No">No</MenuItem>
+                        <MenuItem value="Yes">Formatted</MenuItem>
+                      </TextField>
+                      {validationErrors.format ? (
+                        <p className="text-red-500">
+                          {validationErrors.format.map((error, index) => (
+                            <span key={index}>{error}</span>
+                          ))}
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                      <TextareaAutosize
+                        aria-multiline
+                        value={remarksContent}
+                        onChange={(e) => setRemarksContent(e.target.value)}
+                        placeholder="Enter Remarks..."
+                        style={{
+                          border: "1px solid #bdbdbd",
+                          borderRadius: "5px",
+                          paddingTop: "10px",
+                          paddingBottom: "10px",
+                          paddingLeft: "10px",
+                          width: "100%",
+                          maxWidth: "1120px",
+                          height: "35px",
+                          marginTop: "10px",
+                          overflow: "hidden",
+                          resize: "none",
+                        }}
+                      />
+                      {validationErrors.remark_content ? (
+                        <p className="text-red-500">
+                          {validationErrors.remark_content.map(
+                            (error, index) => (
+                              <span key={index}>{error}</span>
+                            ),
+                          )}
+                        </p>
+                      ) : (
+                        ""
+                      )}
 
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DateField"]}>
-                        <DateField
-                          fullWidth
-                          label="Date"
-                          value={date ? dayjs(date) : null}
-                          onChange={handleDateChange}
-                          format="YYYY-MM-DD"
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                    {validationErrors.date ? (
-                      <p className="text-red-500">
-                        {validationErrors.date.map((error, index) => (
-                          <span key={index}>{error}</span>
-                        ))}
-                      </p>
-                    ) : (
-                      ""
-                    )}
-                    <br />
-                    <Button
-                      disabled={loading}
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                    >
-                      {loading ? "Adding..." : "Add"}
-                    </Button>
-                  </form>
-                </Grid>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DateField"]}>
+                          <DateField
+                            fullWidth
+                            label="Date"
+                            value={date ? dayjs(date) : null}
+                            onChange={handleDateChange}
+                            format="YYYY-MM-DD"
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                      {validationErrors.date ? (
+                        <p className="text-red-500">
+                          {validationErrors.date.map((error, index) => (
+                            <span key={index}>{error}</span>
+                          ))}
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                      <br />
+                      <Button
+                        disabled={loading}
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                      >
+                        {loading ? "Adding..." : "Add"}
+                      </Button>
+                    </form>
+                  </Grid>
+                )}
               </Grid>
             </CardContent>
           </Card>

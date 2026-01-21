@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Log as ComputerLog;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -277,118 +278,159 @@ class ComputerController extends Controller
             ], 422);
         }
 
-        $computer = Computer::findOrFail($computerId);
-        $units = Unit::whereIn('id', $request->checkRows)->get();
+        $message = DB::transaction(function () use ($request, $computerId,) {
+            $computer = Computer::findOrFail($computerId);
+            $units = Unit::whereIn('id', $request->checkRows)->get();
 
-        if ($units->isEmpty()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Units not found.',
-            ], 404);
-        }
+            $isComputerChange = $computer->units->count() === collect($request->checkRows)->count();
 
-        foreach ($units as $unit) {
-            switch ($request->action) {
-                case 'Transfer':
-                    $validation = Validator::make($request->all(), [
-                        'computer_user' => ['required', 'exists:computer_users,id'],
-                        'date'          => ['required'],
-                    ]);
-
-                    if ($validation->fails()) {
-                        return response()->json([
-                            'status'  => false,
-                            'message' => 'Something went wrong. Please fix.',
-                            'errors'  => $validation->errors(),
-                        ], 422);
-                    }
-
-                    $oldComputerUser = $computer->computerUser->name;
-                    $unit->status = 'Used';
-                    $unit->save();
-
-                    $computer->units()->detach($unit->id);
-                    if ($computer->units()->count() === 0) {
-                        $computer->delete();
-                    }
-
-                    $newUser = ComputerUser::find($request->computer_user);
-                    $newComputer = Computer::firstOrCreate([
-                        'computer_user_id' => $newUser->id,
-                    ]);
-                    $newComputer->units()->attach($unit->id);
-
-                    $transfer = TransferUnit::create([
-                        'unit_id'          => $unit->id,
-                        'computer_user_id' => $request->computer_user,
-                        'date'             => $request->date,
-                        'status'           => 'Transfer',
-                    ]);
-
-                    ComputerLog::create([
-                        'user_id'          => auth()->user()->id,
-                        'computer_user_id' => $request->computer_user,
-                        'log_data'         => $transfer->unit->category->category_name . ' unit transferred from: ' . $oldComputerUser . ' to: ' . $transfer->computerUser->name . '\'s computer',
-                    ]);
-
-                    break;
-
-                case 'Defective':
-                    $unit->status = 'Defective';
-                    $unit->save();
-                    $unitsToProcess[] = $unit;
-
-                    ComputerLog::create([
-                        'user_id'          => auth()->user()->id,
-                        'computer_user_id' => $computer->computer_user_id,
-                        'log_data'         => 'Removed ' . $unit->category->category_name . ' unit and automatically marked as defective',
-                    ]);
-
-                    break;
-
-                case 'Delete':
-                    if ($unit->status === 'Defective') {
-                        ComputerLog::create([
-                            'user_id'          => auth()->user()->id,
-                            'computer_user_id' => $computer->computer_user_id,
-                            'log_data'         => $unit->category->category_name . ' marked as defective',
-                        ]);
-                        $unit->status = 'Defective';
-                    } else {
-                        ComputerLog::create([
-                            'user_id'          => auth()->user()->id,
-                            'computer_user_id' => $computer->computer_user_id,
-                            'log_data'         => $unit->category->category_name . ' marked as vacant',
-                        ]);
-                        $unit->status = 'Vacant';
-                    }
-
-                    $computer->units()->detach($unit->id);
-                    $unit->save();
-
-                    if ($computer->units()->count() === 0) {
-                        ComputerLog::create([
-                            'user_id'          => auth()->user()->id,
-                            'computer_user_id' => $computer->computer_user_id,
-                            'log_data'         => 'Computer automatically deleted due to no units left',
-                        ]);
-                        $computer->delete();
-                    }
-
-                    $unitsToProcess[] = $unit;
-                    break;
+            if ($units->isEmpty()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Units not found.',
+                ], 404);
             }
-        }
 
-        $message = '';
+            foreach ($units as $unit) {
+                switch ($request->action) {
+                    case 'Transfer':
+                        $validation = Validator::make($request->all(), [
+                            'computer_user' => ['required', 'exists:computer_users,id'],
+                            'date'          => ['required'],
+                        ]);
 
-        if ($request->action === 'Transfer') {
-            $message = $units->count() . ' unit(s) successfully transferred to ' .  $newUser->name . '\'s computer';
-        } elseif ($request->action === 'Delete') {
-            $message = $units->count() . ' unit(s) successfully removed from ' . $computer->computerUser->name . '\'s computer';
-        } elseif ($request->action === 'Defective') {
-            $message = $units->count() . ' unit(s) successfully marked as defective from ' . $computer->computerUser->name . '\'s computer.';
-        }
+                        if ($validation->fails()) {
+                            return response()->json([
+                                'status'  => false,
+                                'message' => 'Something went wrong. Please fix.',
+                                'errors'  => $validation->errors(),
+                            ], 422);
+                        }
+
+                        $oldComputerUser = $computer->computerUser->name;
+                        $unit->status = 'Used';
+                        $unit->save();
+
+                        // $computer->units()->detach($unit->id);
+                        // if ($computer->units()->count() === 0) {
+                        //     $computer->delete();
+                        // }
+
+                        $newUser = ComputerUser::find($request->computer_user);
+                        $newComputer = Computer::where('computer_user_id', $newUser->id)->first();
+
+                        $computer->units()->detach($unit->id);
+
+                        if ($newComputer && Str::contains($unit->category->category_name, 'Laptop')) {
+                            abort(400, "Laptop cannot be transferred to existing computer.");
+                        }
+
+                        if ($newComputer && $newComputer->units()->whereHas('category', function ($query) {
+                            $query->where('category_name', 'Laptop');
+                        })->exists()) {
+                            abort(400, "Computer units cannot be transferred to existing Laptop.");
+                        }
+
+                        if ($newComputer && Str::contains($unit->category->category_name, 'Laptop') && $newComputer->units()->count() === 0) {
+                            abort(400, "Laptop cannot be transferred to existing computer.");
+                        }
+
+                        if ($isComputerChange) {
+                            if ($newComputer) {
+                                $newComputer->units()->attach($unit->id);
+                            } else {
+                                $computer->update([
+                                    'computer_user_id' => $newUser->id
+                                ]);
+
+                                $computer->units()->attach($unit->id);
+                            }
+                        } else {
+                            if ($newComputer) {
+                                $newComputer->units()->attach($unit->id);
+                            } else {
+                                $createdNew = Computer::create([
+                                    'computer_user_id' => $newUser->id
+                                ]);
+
+                                $createdNew->units()->attach($unit->id);
+                            }
+                        }
+
+                        $transfer = TransferUnit::create([
+                            'unit_id'          => $unit->id,
+                            'computer_user_id' => $request->computer_user,
+                            'date'             => $request->date,
+                            'status'           => 'Transfer',
+                        ]);
+
+                        ComputerLog::create([
+                            'user_id'          => auth()->user()->id,
+                            'computer_user_id' => $request->computer_user,
+                            'log_data'         => $transfer->unit->category->category_name . ' unit transferred from: ' . $oldComputerUser . ' to: ' . $transfer->computerUser->name . '\'s computer',
+                        ]);
+
+                        break;
+
+                    case 'Defective':
+                        $unit->status = 'Defective';
+                        $unit->save();
+                        $unitsToProcess[] = $unit;
+
+                        ComputerLog::create([
+                            'user_id'          => auth()->user()->id,
+                            'computer_user_id' => $computer->computer_user_id,
+                            'log_data'         => 'Removed ' . $unit->category->category_name . ' unit and automatically marked as defective',
+                        ]);
+
+                        break;
+
+                    case 'Delete':
+                        if ($unit->status === 'Defective') {
+                            ComputerLog::create([
+                                'user_id'          => auth()->user()->id,
+                                'computer_user_id' => $computer->computer_user_id,
+                                'log_data'         => $unit->category->category_name . ' marked as defective',
+                            ]);
+                            $unit->status = 'Defective';
+                        } else {
+                            ComputerLog::create([
+                                'user_id'          => auth()->user()->id,
+                                'computer_user_id' => $computer->computer_user_id,
+                                'log_data'         => $unit->category->category_name . ' marked as vacant',
+                            ]);
+                            $unit->status = 'Vacant';
+                        }
+
+                        $computer->units()->detach($unit->id);
+                        $unit->save();
+
+                        if ($computer->units()->count() === 0) {
+                            ComputerLog::create([
+                                'user_id'          => auth()->user()->id,
+                                'computer_user_id' => $computer->computer_user_id,
+                                'log_data'         => 'Computer automatically deleted due to no units left',
+                            ]);
+                            $computer->delete();
+                        }
+
+                        $unitsToProcess[] = $unit;
+                        break;
+                }
+            }
+
+            $message = '';
+
+            if ($request->action === 'Transfer') {
+                $message = $units->count() . ' unit(s) successfully transferred to ' .  $newUser->name . '\'s computer';
+            } elseif ($request->action === 'Delete') {
+                $message = $units->count() . ' unit(s) successfully removed from ' . $computer->computerUser->name . '\'s computer';
+            } elseif ($request->action === 'Defective') {
+                $message = $units->count() . ' unit(s) successfully marked as defective from ' . $computer->computerUser->name . '\'s computer.';
+            }
+
+            return $message;
+        });
 
         return response()->json([
             'status'  => true,

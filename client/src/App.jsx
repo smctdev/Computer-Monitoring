@@ -63,7 +63,6 @@ function App() {
           element={<TransferedBranchUnits />}
         />
         <Route path="/all-units" element={<AllUnits />} />
-        <Route path="/computers/:id" element={<Extract />} />
         <Route path="/user" element={<User />} />
         <Route path="/setup/branch-units" element={<Branches />} />
         <Route path="/all-logs" element={<AllLogs />} />
@@ -96,6 +95,7 @@ function App() {
         <Route path="/" element={<LogIn />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/computers/:id" element={<Extract />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

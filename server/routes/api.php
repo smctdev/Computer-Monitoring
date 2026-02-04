@@ -50,7 +50,6 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::get('/computer-user-edit/{id}', [ComputerUserController::class, 'edit']);
     Route::get('/computer-user-specs/{id}', [ComputerUserController::class, 'viewSpecs']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/computers/{id}', [ComputerController::class, 'show']);
     Route::get('/unread-notifications', [NotificationController::class, 'index']);
     Route::get('/logs', [LogController::class, 'index']);
     Route::get('/admin/users-list', [UserController::class, 'index']);
@@ -101,6 +100,8 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 
 // GET
+Route::get('/computers/{id}', [ComputerController::class, 'show']);
+
 // POST
 // PUT
 // DELETE

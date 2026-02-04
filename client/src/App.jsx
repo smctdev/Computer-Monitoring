@@ -95,8 +95,8 @@ function App() {
         <Route path="/" element={<LogIn />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/computers/:id" element={<Extract />} />
       </Route>
+      <Route path="/computers/:id" element={<Extract />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
